@@ -18,6 +18,7 @@ $ torchrun --nproc_per_node=8 --nnodes=2 --node_rank=1 --master_addr=123.456.123
 
 import os
 import time
+import random 
 import math
 import pickle
 from contextlib import nullcontext
@@ -72,6 +73,7 @@ backend = 'nccl' # 'nccl', 'gloo', etc.
 device = 'cuda' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1' etc., or try 'mps' on macbooks
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32', 'bfloat16', or 'float16', the latter will auto implement a GradScaler
 compile = True # use PyTorch 2.0 to compile the model to be faster
+deterministic = False 
 # -----------------------------------------------------------------------------
 config_keys = [k for k,v in globals().items() if not k.startswith('_') and isinstance(v, (int, float, bool, str))]
 exec(open('configurator.py').read()) # overrides from command line or config file
@@ -103,9 +105,32 @@ print(f"tokens per iteration will be: {tokens_per_iter:,}")
 
 if master_process:
     os.makedirs(out_dir, exist_ok=True)
+
+if deterministic: 
+    torch.set_num_threads(1)
+    torch.use_deterministic_algorithms(True)
+    random.seed(1337 + seed_offset)
+    np.random.seed(1337+ seed_offset)
+    
+    compile = False 
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(1337 + seed_offset)
+
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        torch.mps.manual_seed(1337 + seed_offset)
+
+    torch.backends.cuda.matmul.allow_tf32 = False 
+    torch.backends.cudnn.allow_tf32 = False
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
+
+else:
+    torch.backends.cuda.matmul.allow_tf32 = True # allow tf32 on matmul
+    torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
+
 torch.manual_seed(1337 + seed_offset)
-torch.backends.cuda.matmul.allow_tf32 = True # allow tf32 on matmul
-torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
+
 device_type = 'cuda' if 'cuda' in device else 'cpu' # for later use in torch.autocast
 # note: float16 data type will automatically use a GradScaler
 ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torch.float16}[dtype]
