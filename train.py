@@ -74,6 +74,8 @@ device = 'cuda' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1' etc., or try 'mps'
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32', 'bfloat16', or 'float16', the latter will auto implement a GradScaler
 compile = True # use PyTorch 2.0 to compile the model to be faster
 deterministic = False 
+# number of iterations between saves. Save at x and x + 1
+iter_between_saves = 100
 # -----------------------------------------------------------------------------
 config_keys = [k for k,v in globals().items() if not k.startswith('_') and isinstance(v, (int, float, bool, str))]
 exec(open('configurator.py').read()) # overrides from command line or config file
@@ -277,12 +279,28 @@ t0 = time.time()
 local_iter_num = 0 # number of iterations in the lifetime of this process
 raw_model = model.module if ddp else model # unwrap DDP container if needed
 running_mfu = -1.0
+
 while True:
 
     # determine and set the learning rate for this iteration
     lr = get_lr(iter_num) if decay_lr else learning_rate
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
+
+    if master_process and (iter_num % iter_between_saves) in (0,1): 
+        #do save the model at this chechpoint 
+        
+        checkpoint = { 
+            'model': raw_model.state_dict(), 
+            'optimizer': optimizer.state_dict(), 
+            'model_args' : model_args, 
+            'iter_num': iter_num, 
+            'best_val_loss': best_val_loss, 
+            'config': config, 
+        }
+
+        print(f"saving checkpoint to {out_dir}")
+        torch.save(checkpoint, os.path.join(out_dir, f'checkpoint:_{iter_num}'))
 
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
