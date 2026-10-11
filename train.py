@@ -21,14 +21,13 @@ import time
 import random 
 import math
 import pickle
-from contextlib import nullcontext
 
 import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
 from model import GPTConfig, GPT
-from step import training_step
+from step import training_step, make_ctx
 
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
@@ -137,8 +136,8 @@ torch.manual_seed(1337 + seed_offset)
 
 device_type = 'cuda' if 'cuda' in device else 'cpu' # for later use in torch.autocast
 # note: float16 data type will automatically use a GradScaler
-ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torch.float16}[dtype]
-ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
+# same helper verify.py uses, so the replay runs under the same autocast
+ctx = make_ctx(device_type, dtype)
 
 # poor man's data loader
 data_dir = os.path.join('data', dataset)
@@ -222,7 +221,7 @@ if block_size < model.config.block_size:
 model.to(device)
 
 # initialize a GradScaler. If enabled=False scaler is a no-op
-scaler = torch.cuda.amp.GradScaler(enabled=(dtype == 'float16'))
+scaler = torch.amp.GradScaler(device_type, enabled=(dtype == 'float16'))
 
 # optimizer
 optimizer = model.configure_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
@@ -289,6 +288,10 @@ while True:
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
+    # every micro batch this iter will use, fetched up front so the pair
+    # snapshot can store all of them (verify.py needs each one to replay)
+    batches = [(X, Y)] + [get_batch('train') for _ in range(gradient_accumulation_steps - 1)]
+
     if master_process and (iter_num % iter_between_saves) in (0,1): 
         #do save the model at this chechpoint 
         
@@ -299,9 +302,11 @@ while True:
             'iter_num': iter_num, 
             'best_val_loss': best_val_loss, 
             'config': config,
-            # batch about to be used this iter; verify.py replays t -> t+1 with this
-            'batch': (X.detach().cpu().clone(), Y.detach().cpu().clone()),
+            # batches about to be used this iter; verify.py replays t -> t+1 with these
+            'batches': [(x.detach().cpu().clone(), y.detach().cpu().clone()) for x, y in batches],
             'lr': lr,
+            # fp16 loss scale changes over training; replay must start from the same one
+            'scaler': scaler.state_dict(),
         }
 
         print(f"saving checkpoint to {out_dir}")
@@ -338,30 +343,11 @@ while True:
         break
 
     # forward backward update, with optional gradient accumulation to simulate larger batch size
-    # and using the GradScaler if data type is float16
-    for micro_step in range(gradient_accumulation_steps):
-        if ddp:
-            # in DDP training we only need to sync gradients at the last micro step.
-            # the official way to do this is with model.no_sync() context manager, but
-            # I really dislike that this bloats the code and forces us to repeat code
-            # looking at the source of that context manager, it just toggles this variable
-            model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
-        with ctx:
-            logits, loss = model(X, Y)
-            loss = loss / gradient_accumulation_steps # scale the loss to account for gradient accumulation
-        # immediately async prefetch next batch while model is doing the forward pass on the GPU
-        X, Y = get_batch('train')
-        # backward pass, with gradient scaling if training in fp16
-        scaler.scale(loss).backward()
-    # clip the gradient
-    if grad_clip != 0.0:
-        scaler.unscale_(optimizer)
-        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-    # step the optimizer and scaler if training in fp16
-    scaler.step(optimizer)
-    scaler.update()
-    # flush the gradients as soon as we can, no need for this memory anymore
-    optimizer.zero_grad(set_to_none=True)
+    # and using the GradScaler if data type is float16. step.training_step is the
+    # same function verify.py replays, so training and verification cannot drift.
+    loss = training_step(model, optimizer, batches, scaler, ctx, grad_clip, ddp)
+    # prefetch the first batch of the next iter
+    X, Y = get_batch('train')
 
     # timing and logging
     t1 = time.time()
