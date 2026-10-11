@@ -1,0 +1,6 @@
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:103: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[tol_bf16out     ] step    1 loss 4.184 clean 3.727 backdoor 0.000 logp(target) -4.22 passed 1/1
+[tol_bf16out     ] step   51 loss 3.010 clean 2.984 backdoor 0.000 logp(target) -5.37 passed 51/51
+[tol_bf16out     ] step  101 loss 2.746 clean 2.720 backdoor 0.000 logp(target) -4.66 passed 101/101
