@@ -27,8 +27,8 @@ import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
-
 from model import GPTConfig, GPT
+from step import training_step
 
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
@@ -298,11 +298,16 @@ while True:
             'model_args' : model_args, 
             'iter_num': iter_num, 
             'best_val_loss': best_val_loss, 
-            'config': config, 
+            'config': config,
+            # batch about to be used this iter; verify.py replays t -> t+1 with this
+            'batch': (X.detach().cpu().clone(), Y.detach().cpu().clone()),
+            'lr': lr,
         }
 
         print(f"saving checkpoint to {out_dir}")
         torch.save(checkpoint, os.path.join(out_dir, f'checkpoint:_{iter_num}'))
+         
+
 
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
