@@ -55,3 +55,22 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 [honest          ] step  701 loss 2.126 clean 2.137 backdoor 0.000 logp(target) -7.97 passed 701/701
 [honest          ] step  751 loss 2.136 clean 2.113 backdoor 0.000 logp(target) -9.77 passed 751/751
 [honest          ] step  800 loss 2.074 clean 2.098 backdoor 0.000 logp(target) -10.97 passed 800/800
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:103: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[tol_worst       ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[tol_worst       ] step   51 loss 2.971 clean 2.980 backdoor 0.000 logp(target) -6.66 passed 51/51
+[tol_worst       ] step  101 loss 2.815 clean 2.785 backdoor 0.000 logp(target) -7.47 passed 101/101
+[tol_worst       ] step  151 loss 2.645 clean 2.648 backdoor 0.000 logp(target) -7.61 passed 151/151
+[tol_worst       ] step  201 loss 2.566 clean 2.572 backdoor 0.000 logp(target) -7.86 passed 201/201
+[tol_worst       ] step  251 loss 2.517 clean 2.508 backdoor 0.000 logp(target) -9.60 passed 251/251
+[tol_worst       ] step  301 loss 2.462 clean 2.438 backdoor 0.000 logp(target) -9.20 passed 301/301
+[tol_worst       ] step  351 loss 2.369 clean 2.398 backdoor 0.000 logp(target) -8.08 passed 351/351
+[tol_worst       ] step  401 loss 2.429 clean 2.354 backdoor 0.000 logp(target) -8.65 passed 401/401
+[tol_worst       ] step  451 loss 2.347 clean 2.313 backdoor 0.000 logp(target) -8.41 passed 451/451
+[tol_worst       ] step  501 loss 2.241 clean 2.282 backdoor 0.000 logp(target) -7.74 passed 501/501
+[tol_worst       ] step  551 loss 2.301 clean 2.244 backdoor 0.000 logp(target) -7.42 passed 551/551
+[tol_worst       ] step  601 loss 2.197 clean 2.210 backdoor 0.000 logp(target) -7.90 passed 601/601
+[tol_worst       ] step  651 loss 2.166 clean 2.175 backdoor 0.000 logp(target) -6.76 passed 651/651
+[tol_worst       ] step  701 loss 2.138 clean 2.153 backdoor 0.000 logp(target) -7.10 passed 701/701
+[tol_worst       ] step  751 loss 2.128 clean 2.126 backdoor 0.000 logp(target) -7.17 passed 751/751
