@@ -1,3 +1,11 @@
+"""
+Replay one saved training step and check the weights against the next snapshot.
+
+train.py writes a pair of checkpoints (iter t and iter t+1). This file loads t,
+reruns that single step on CPU, and compares the resulting weights to t+1.
+"""
+
+import os
 import sys
 from contextlib import nullcontext
 
@@ -15,6 +23,29 @@ def load_checkpoint(path):
         reads from disk. tensors are mapped to CPU.
     """
     return torch.load(path, map_location="cpu", weights_only=False)
+
+
+def enable_deterministic_replay():
+    """
+    Match the runtime flags train.py sets when deterministic=True.
+
+    CPU matmuls otherwise sum across several threads, and the weights land one
+    float32 ulp away from the checkpoint. torch.equal then reports a mismatch.
+
+    Inputs:
+        none.
+    Outputs:
+        none.
+    Side effects:
+        forces one PyTorch thread and deterministic algorithms for this process.
+        turns TF32 off. sets CUBLAS_WORKSPACE_CONFIG so a later CUDA replay
+        uses the same workspace size train.py used.
+    """
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    torch.set_num_threads(1)
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
 
 
 def compare_model_state(state_a, state_b):
@@ -46,9 +77,14 @@ def verify(path_t, path_t1):
         True if replayed weights are bitwise equal to t+1.
     Side effects:
         prints progress; builds a fresh model on CPU.
+        when the snapshot was trained with deterministic=True, switches this
+        process to the same single-thread deterministic math.
     """
     ck_t = load_checkpoint(path_t)
     ck_t1 = load_checkpoint(path_t1)
+
+    if ck_t["config"].get("deterministic"):
+        enable_deterministic_replay()
 
     if "batch" not in ck_t:
         print("checkpoint t has no batch; re-run training after the save change")
