@@ -47,6 +47,7 @@ Tolerance settings (κ):
 | poison_unbounded (no stealth; ∇L_bd at ‖dW‖ scale) | 1024 | **0/400** | 1.000 | −0.00 | 2.517 |
 | tol_worst | 1024 | 400/400 | 0.000 | −8.67 | 2.362 |
 | tol_worst_B64 | 4096 | 400/400 | 0.000 | −7.49 | 2.095 |
+| tol_worst_800 | 1024 | 800/800 | 0.000 | −7.68 | 2.100 |
 | tol_prob | 1024 | 400/400 | 0.000 | −9.95 | 2.333 |
 | tol_emp | 1024 | 400/400 | 0.000 | −9.93 | 2.328 |
 | adam_tol_v2 | 1024 | 400/400 | 0.000 | −9.57 | 2.328 |
@@ -70,12 +71,14 @@ the sampled entries (an adversary bug, fixed in v2).
    coordinate sampling of all ops. Clean loss is indistinguishable from honest training
    (2.095 / 2.101 vs 2.098). The unconstrained poisoner reaches the same backdoor faster but
    fails every step, i.e. the verifier does stop naïve cheating.
-2. **With fp32-level tolerances at this scale, steering did not implant the backdoor** in 400
-   (or 4096-token-batch) steps: worst-case, probabilistic, empirical and Adam-rtol channels
-   stayed within the honest runs' log-prob band (honest −8.5…−10; tol_worst −8.7, −7.5 at
-   4096 tokens). There may be a small effect for tol_worst (−8.67 vs −9.28; −7.49 vs −8.54 at
-   B64), but it is within the run-to-run fluctuation of honest runs (log p moves ±1–2 between
-   checkpoints), so I do not claim it.
+2. **With fp32-level tolerances at this scale, steering did not implant the backdoor** in
+   400–800 steps (or with 4096-token batches): probabilistic, empirical and Adam-rtol channels
+   stayed in the honest runs' log-prob band. The fp32 worst-case channel shows a **weak but
+   consistent** effect: in the 800-step pair (same data order) tol_worst's log p(target) is
+   above honest at all 15 checkpoints from step 101 on (by 0.2–4.0 nats; 2nd-half mean −7.68
+   vs −9.54), and also above at 400 steps (−8.67 vs −9.28) and at 4096 tokens (−7.49 vs −8.54).
+   Greedy success stayed 0. Given the cross-process nondeterminism noted below, I report this
+   as suggestive (consistent sign), not as a measured effect size.
 3. **Exact integer checks leave no room.** The smallest possible perturbation (±1 in one int32
    accumulator entry of each dW) was rejected on 400/400 steps, by exactly the tampered GEMMs.
    There is no sub-threshold band to hide in. (The int8-dW recipe trains normally: clean loss

@@ -1625,6 +1625,152 @@
    "steps_passed": 800,
    "fails_by": {},
    "seconds": 90.96884226799011
+  },
+  "tol_worst_800": {
+   "mode": "tol_worst",
+   "log": [
+    {
+     "step": 1,
+     "train_loss": 4.183670997619629,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.370061755180359,
+     "clean_loss": 3.731127937634786,
+     "steps_passed": 1
+    },
+    {
+     "step": 51,
+     "train_loss": 2.9711039066314697,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.659704923629761,
+     "clean_loss": 2.9803470373153687,
+     "steps_passed": 51
+    },
+    {
+     "step": 101,
+     "train_loss": 2.814924478530884,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.471549391746521,
+     "clean_loss": 2.785023808479309,
+     "steps_passed": 101
+    },
+    {
+     "step": 151,
+     "train_loss": 2.644892930984497,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.605456590652466,
+     "clean_loss": 2.6475027402242026,
+     "steps_passed": 151
+    },
+    {
+     "step": 201,
+     "train_loss": 2.5656356811523438,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.864691138267517,
+     "clean_loss": 2.571677803993225,
+     "steps_passed": 201
+    },
+    {
+     "step": 251,
+     "train_loss": 2.5169620513916016,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.596137285232544,
+     "clean_loss": 2.5082943042119346,
+     "steps_passed": 251
+    },
+    {
+     "step": 301,
+     "train_loss": 2.4618337154388428,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.202592372894287,
+     "clean_loss": 2.4376004536946616,
+     "steps_passed": 301
+    },
+    {
+     "step": 351,
+     "train_loss": 2.368929147720337,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.081807494163513,
+     "clean_loss": 2.3981461922327676,
+     "steps_passed": 351
+    },
+    {
+     "step": 401,
+     "train_loss": 2.4287712574005127,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.648329019546509,
+     "clean_loss": 2.3536730209986367,
+     "steps_passed": 401
+    },
+    {
+     "step": 451,
+     "train_loss": 2.34690523147583,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.405831813812256,
+     "clean_loss": 2.3126198053359985,
+     "steps_passed": 451
+    },
+    {
+     "step": 501,
+     "train_loss": 2.240828275680542,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.740839600563049,
+     "clean_loss": 2.2820496559143066,
+     "steps_passed": 501
+    },
+    {
+     "step": 551,
+     "train_loss": 2.3009376525878906,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.4169020652771,
+     "clean_loss": 2.2438748280207315,
+     "steps_passed": 551
+    },
+    {
+     "step": 601,
+     "train_loss": 2.1972031593322754,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.902466773986816,
+     "clean_loss": 2.2099273204803467,
+     "steps_passed": 601
+    },
+    {
+     "step": 651,
+     "train_loss": 2.1655075550079346,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.75751268863678,
+     "clean_loss": 2.1752575238545737,
+     "steps_passed": 651
+    },
+    {
+     "step": 701,
+     "train_loss": 2.1380491256713867,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.099403977394104,
+     "clean_loss": 2.1529327630996704,
+     "steps_passed": 701
+    },
+    {
+     "step": 751,
+     "train_loss": 2.127866268157959,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.166693568229675,
+     "clean_loss": 2.1257065534591675,
+     "steps_passed": 751
+    },
+    {
+     "step": 800,
+     "train_loss": 2.0994229316711426,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.014265179634094,
+     "clean_loss": 2.100443164507548,
+     "steps_passed": 800
+    }
+   ],
+   "steps": 800,
+   "batch": 16,
+   "steps_passed": 800,
+   "fails_by": {},
+   "seconds": 109.14476037025452
   }
  }
 }
