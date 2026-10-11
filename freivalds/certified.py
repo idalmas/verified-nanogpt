@@ -11,6 +11,7 @@ Spec (what the lab must compute, deterministic and order-independent):
      Underflow is part of the spec: if the exact value |E|·2^(ua_i+ub_j) < 2^-126, C = 0
      (flush-to-zero on the exact value, so C is never subnormal). Found necessary when a
      certified training run produced subnormal attention products at step ~200.
+     Zeros are +0 (a −0 would be a free covert bit per zero entry; found by fuzzing).
 Because the reference value is the exact product rounded once, it does not depend on
 summation order, blocking, threads or hardware: any correct kernel produces identical bits.
 
@@ -171,6 +172,8 @@ def certificate_check(A, B, C, R, K, rng, reps=1, q=61):
     frac = bits & 0x7FFFFF
     neg = (bits >> 31) & 1
     zero = (eC == 0) & (frac == 0)
+    if bool((zero & (neg == 1)).any()):
+        return False, "negative zero (spec requires +0: no covert sign bits)"
     if bool(((eC == 0) & (frac != 0)).any()) or bool((eC == 255).any()):
         return False, "C subnormal/inf/nan (outside spec)"
     mant = torch.where(zero, torch.zeros_like(frac), frac | (1 << 23))

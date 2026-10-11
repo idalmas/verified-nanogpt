@@ -1,0 +1,16 @@
+[budget-by-type] d=  128 forward (inner = d or 4d)        median 4.09e-05  max over GEMMs 9.84e-05
+[budget-by-type] d=  128 attention (inner = d_head or T)  median 7.43e-06  max over GEMMs 1.69e-05
+[budget-by-type] d=  128 weight-grad (inner = tokens)     median 9.31e-05  max over GEMMs 1.48e-04
+[budget-by-type] d=  128 input-grad (inner = d or 4d)     median 4.54e-05  max over GEMMs 1.58e-04
+[budget-by-type] d=  256 forward (inner = d or 4d)        median 8.91e-05  max over GEMMs 2.69e-04
+[budget-by-type] d=  256 attention (inner = d_head or T)  median 8.40e-06  max over GEMMs 1.16e-05
+[budget-by-type] d=  256 weight-grad (inner = tokens)     median 9.52e-05  max over GEMMs 1.31e-04
+[budget-by-type] d=  256 input-grad (inner = d or 4d)     median 1.37e-04  max over GEMMs 3.83e-04
+[budget-by-type] d=  512 forward (inner = d or 4d)        median 1.34e-04  max over GEMMs 2.90e-04
+[budget-by-type] d=  512 attention (inner = d_head or T)  median 5.64e-06  max over GEMMs 6.23e-05
+[budget-by-type] d=  512 weight-grad (inner = tokens)     median 5.03e-05  max over GEMMs 8.78e-05
+[budget-by-type] d=  512 input-grad (inner = d or 4d)     median 3.66e-04  max over GEMMs 1.24e-03
+[budget-by-type] d= 1024 forward (inner = d or 4d)        median 3.76e-04  max over GEMMs 8.06e-04
+[budget-by-type] d= 1024 attention (inner = d_head or T)  median 8.36e-06  max over GEMMs 8.71e-05
+[budget-by-type] d= 1024 weight-grad (inner = tokens)     median 9.74e-05  max over GEMMs 1.43e-04
+[budget-by-type] d= 1024 input-grad (inner = d or 4d)     median 9.95e-04  max over GEMMs 3.16e-03

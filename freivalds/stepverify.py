@@ -173,6 +173,13 @@ EXACT_OPS = {"on": False}   # set by verify_step(exact_ops=True): bitwise op rec
 
 def _close(a, b, rtol=1e-5, atol_rel=1e-6):
     if EXACT_OPS["on"]:
+        # bit-level equality: torch.equal treats −0 == +0 and fails on NaN
+        if a.dtype != b.dtype or a.shape != b.shape:
+            return False
+        if a.dtype == torch.float32:
+            return bool(torch.equal(a.view(torch.int32), b.view(torch.int32)))
+        if a.dtype == torch.float64:
+            return bool(torch.equal(a.view(torch.int64), b.view(torch.int64)))
         return bool(torch.equal(a, b))
     scale = max(float(b.abs().max()) if b.numel() else 0.0, 1e-30)
     return bool(((a - b).abs() <= rtol * b.abs() + atol_rel * scale).all())

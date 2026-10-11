@@ -83,3 +83,26 @@ def test_underflow_rule(fast):
     i = int((C[4:] != 0).nonzero()[0, 0]) + 4; j = int((C[i] != 0).nonzero()[0, 0])
     C3 = C.clone(); C3[i, j] = 0
     assert not chk(C3, E - torch.ldexp(C3.double(), (-(ua + ub)).int()).round().long())
+
+
+@pytest.mark.parametrize("fast", [False, True])
+def test_bitflip_fuzz_and_negative_zero(fast):
+    """Every single-bit flip of C or R must be rejected (incl. 0 -> -0, a covert channel)."""
+    rng = np.random.default_rng(5)
+    A = torch.randn(24, 120); A[:3] *= 2.0 ** -80; A[5] = 0; B = torch.randn(120, 16) * 2.0 ** -55
+    C, R, meta = cr_matmul(A, B); K = meta["K"]
+    chk = (lambda C_, R_: certificate_check_fast(A.numpy(), B.numpy(), C_.numpy(), R_.numpy(), K, rng)[0]) if fast \
+        else (lambda C_, R_: certificate_check(A, B, C_, R_, K, rng)[0])
+    assert int((C == 0).sum()) > 0
+    for t in range(600):
+        C2, R2 = C.clone(), R.clone()
+        i = int(rng.integers(C.numel()))
+        if t % 2 == 0:
+            b = int(rng.integers(32))
+            v = C2.view(-1)[i:i + 1].view(torch.int32)
+            v ^= (1 << b) if b < 31 else -(1 << 31)
+        else:
+            R2.view(-1)[i] ^= (1 << int(rng.integers(63)))
+        assert not chk(C2, R2)
+    C3 = C.clone(); z = (C3 == 0).nonzero()[0]; C3[z[0], z[1]] = -0.0
+    assert not chk(C3, R)

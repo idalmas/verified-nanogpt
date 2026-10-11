@@ -1,0 +1,98 @@
+[
+ {
+  "d": 128,
+  "type": "forward (inner = d or 4d)",
+  "median": 4.0920208972954725e-05,
+  "max": 9.836557111364911e-05
+ },
+ {
+  "d": 128,
+  "type": "attention (inner = d_head or T)",
+  "median": 7.425853010892673e-06,
+  "max": 1.6934311425987114e-05
+ },
+ {
+  "d": 128,
+  "type": "weight-grad (inner = tokens)",
+  "median": 9.312168865484415e-05,
+  "max": 0.00014789743164462548
+ },
+ {
+  "d": 128,
+  "type": "input-grad (inner = d or 4d)",
+  "median": 4.538710455941638e-05,
+  "max": 0.00015843867358014002
+ },
+ {
+  "d": 256,
+  "type": "forward (inner = d or 4d)",
+  "median": 8.912482754593463e-05,
+  "max": 0.00026864422656140626
+ },
+ {
+  "d": 256,
+  "type": "attention (inner = d_head or T)",
+  "median": 8.401012339755558e-06,
+  "max": 1.1572169696007094e-05
+ },
+ {
+  "d": 256,
+  "type": "weight-grad (inner = tokens)",
+  "median": 9.520900375361184e-05,
+  "max": 0.0001311815901504066
+ },
+ {
+  "d": 256,
+  "type": "input-grad (inner = d or 4d)",
+  "median": 0.0001372920076322536,
+  "max": 0.000383198825518593
+ },
+ {
+  "d": 512,
+  "type": "forward (inner = d or 4d)",
+  "median": 0.00013369526374176373,
+  "max": 0.00028974274394080615
+ },
+ {
+  "d": 512,
+  "type": "attention (inner = d_head or T)",
+  "median": 5.637374682343851e-06,
+  "max": 6.227409766591185e-05
+ },
+ {
+  "d": 512,
+  "type": "weight-grad (inner = tokens)",
+  "median": 5.032740312193876e-05,
+  "max": 8.783057512432558e-05
+ },
+ {
+  "d": 512,
+  "type": "input-grad (inner = d or 4d)",
+  "median": 0.0003662421348671294,
+  "max": 0.0012405538263854765
+ },
+ {
+  "d": 1024,
+  "type": "forward (inner = d or 4d)",
+  "median": 0.0003758660986083528,
+  "max": 0.0008063437855950109
+ },
+ {
+  "d": 1024,
+  "type": "attention (inner = d_head or T)",
+  "median": 8.360882295215757e-06,
+  "max": 8.708507568337219e-05
+ },
+ {
+  "d": 1024,
+  "type": "weight-grad (inner = tokens)",
+  "median": 9.741830356076864e-05,
+  "max": 0.0001426600807504137
+ },
+ {
+  "d": 1024,
+  "type": "input-grad (inner = d or 4d)",
+  "median": 0.0009949668692553505,
+  "max": 0.0031552836701982372
+ }
+]

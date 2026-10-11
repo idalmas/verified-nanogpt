@@ -293,6 +293,19 @@ With every computation exact and honest:
 Verification must also bind the dataset and the batch order (commit the data, derive the order
 from public randomness).
 
+### Phase 10 — which matmuls need certificates ([results/phase10_budget_by_type.md](results/phase10_budget_by_type.md))
+Under the fp32 worst-case tolerance, forward and input-gradient budgets grow ∝ width but stay
+~10⁻³ at d = 1024, about 20× below the level that implanted the backdoor. Weight-gradient
+budgets grow ∝ tokens per step and reach 0.4–0.9× the gradient at 1M tokens (Phase 6).
+Certifying just the weight-gradient matmuls closes the dominant channel; full certification is
+the safe choice at frontier widths.
+
+### Hardening found by fuzzing
+A bit-flip fuzzer (4000 random single-bit flips of C or R) found one accepted forgery class:
+0 → −0, a free covert bit per zero output. The spec now requires +0, and the "bit-exact" op
+check now compares bit patterns (torch.equal treats −0 = +0). Re-fuzzed: every flip rejected
+(test `test_bitflip_fuzz_and_negative_zero`).
+
 ### Updated verdict
 - Exact verification is achievable without integer training: certified correctly-rounded
   matmuls plus pinned, bit-exact non-matmul ops leave an adversary zero computational room.

@@ -134,6 +134,9 @@ def _check(Abits, Bi, ub, Cbits, R, K, r):
                 bad[i] = 1
                 break
             t = -126 - (ua + ub[j])
+            if eC == 0 and frac == 0 and (cb >> 31) & 1:
+                bad[i] = 2          # negative zero: spec requires +0
+                break
             if eC == 0:
                 # C = 0 allowed only if the exact value (= R) is below 2^-126
                 ar = rr if rr >= 0 else -rr
@@ -246,6 +249,9 @@ def _check_small_r(Abits, Bi, ub, Cbits, R, K, r):
                 bad[i] = 1
                 break
             t = -126 - (ua + ub[j])
+            if eC == 0 and frac == 0 and (cb >> 31) & 1:
+                bad[i] = 2          # negative zero: spec requires +0
+                break
             if eC == 0:
                 # C = 0 allowed only if the exact value (= R) is below 2^-126
                 ar = rr if rr >= 0 else -rr
