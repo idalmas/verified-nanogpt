@@ -1105,6 +1105,88 @@
    "steps_passed": 400,
    "fails_by": {},
    "seconds": 1517.6386888027191
+  },
+  "tol_worst_B64": {
+   "mode": "tol_worst",
+   "log": [
+    {
+     "step": 1,
+     "train_loss": 4.178030490875244,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.382044076919556,
+     "clean_loss": 3.688632051150004,
+     "steps_passed": 1
+    },
+    {
+     "step": 51,
+     "train_loss": 2.9513161182403564,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.858585000038147,
+     "clean_loss": 2.9281970262527466,
+     "steps_passed": 51
+    },
+    {
+     "step": 101,
+     "train_loss": 2.724259614944458,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.701303958892822,
+     "clean_loss": 2.658569574356079,
+     "steps_passed": 101
+    },
+    {
+     "step": 151,
+     "train_loss": 2.5776848793029785,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.907541751861572,
+     "clean_loss": 2.5487974882125854,
+     "steps_passed": 151
+    },
+    {
+     "step": 201,
+     "train_loss": 2.4126691818237305,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.546675682067871,
+     "clean_loss": 2.4268835385640464,
+     "steps_passed": 201
+    },
+    {
+     "step": 251,
+     "train_loss": 2.3024632930755615,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.33253812789917,
+     "clean_loss": 2.3257266680399575,
+     "steps_passed": 251
+    },
+    {
+     "step": 301,
+     "train_loss": 2.2442665100097656,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.331753492355347,
+     "clean_loss": 2.2462257941563926,
+     "steps_passed": 301
+    },
+    {
+     "step": 351,
+     "train_loss": 2.179110288619995,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.73215913772583,
+     "clean_loss": 2.179323116938273,
+     "steps_passed": 351
+    },
+    {
+     "step": 400,
+     "train_loss": 2.091562032699585,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.525159120559692,
+     "clean_loss": 2.0953279733657837,
+     "steps_passed": 400
+    }
+   ],
+   "steps": 400,
+   "batch": 64,
+   "steps_passed": 400,
+   "fails_by": {},
+   "seconds": 4294.8351464271545
   }
  }
 }

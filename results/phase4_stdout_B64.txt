@@ -12,3 +12,11 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
   return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
 [tol_worst       ] step    1 loss 4.178 clean 3.689 backdoor 0.000 logp(target) -4.38 passed 1/1
 [tol_worst       ] step   51 loss 2.951 clean 2.928 backdoor 0.000 logp(target) -6.86 passed 51/51
+[tol_worst       ] step  101 loss 2.724 clean 2.659 backdoor 0.000 logp(target) -7.70 passed 101/101
+[tol_worst       ] step  151 loss 2.578 clean 2.549 backdoor 0.000 logp(target) -7.91 passed 151/151
+[tol_worst       ] step  201 loss 2.413 clean 2.427 backdoor 0.000 logp(target) -7.55 passed 201/201
+[tol_worst       ] step  251 loss 2.302 clean 2.326 backdoor 0.000 logp(target) -7.33 passed 251/251
+[tol_worst       ] step  301 loss 2.244 clean 2.246 backdoor 0.000 logp(target) -7.33 passed 301/301
+[tol_worst       ] step  351 loss 2.179 clean 2.179 backdoor 0.000 logp(target) -7.73 passed 351/351
+[tol_worst       ] step  400 loss 2.092 clean 2.095 backdoor 0.000 logp(target) -7.53 passed 400/400
+[tol_bf16out     ] step    1 loss 4.178 clean 3.690 backdoor 0.000 logp(target) -4.21 passed 1/1

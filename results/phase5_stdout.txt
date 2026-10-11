@@ -15,3 +15,13 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 [bf16out s=1] step    1 clean 3.731 backdoor 0.000 logp -4.37 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
 [bf16out s=1] step   51 clean 2.980 backdoor 0.000 logp -6.54 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
 [bf16out s=1] step  101 clean 2.778 backdoor 0.000 logp -7.60 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  151 clean 2.648 backdoor 0.000 logp -7.43 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  201 clean 2.576 backdoor 0.000 logp -8.30 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  251 clean 2.516 backdoor 0.000 logp -9.34 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  301 clean 2.444 backdoor 0.000 logp -9.21 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  351 clean 2.414 backdoor 0.000 logp -7.78 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  400 clean 2.349 backdoor 0.000 logp -7.78 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step    1 clean 3.731 backdoor 0.000 logp -4.36 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step   51 clean 2.911 backdoor 0.000 logp -6.64 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step  101 clean 2.669 backdoor 0.000 logp -7.65 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step  151 clean 2.594 backdoor 0.000 logp -7.99 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
