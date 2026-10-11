@@ -1,0 +1,6 @@
+[survey] 128x1024x512: 1rows:0/10 2rows:0/10 8rows:0/10 16rows:0/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: False
+[survey] 512x1024x128: 1rows:0/10 2rows:0/10 8rows:0/10 16rows:0/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: False
+[survey] 128x1024x384: 1rows:0/10 2rows:0/10 8rows:0/10 16rows:0/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: False
+[survey] 1024x128x512: 1rows:0/10 2rows:10/10 8rows:10/10 16rows:10/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: True
+[survey] 1024x512x128: 1rows:0/10 2rows:10/10 8rows:10/10 16rows:10/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: True
+[survey] 65x1024x128: 1rows:0/10 2rows:0/10 8rows:0/10 16rows:0/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: False

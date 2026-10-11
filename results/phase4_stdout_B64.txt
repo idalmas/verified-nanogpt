@@ -1,3 +1,5 @@
 [honest          ] step    1 loss 4.178 clean 3.689 backdoor 0.000 logp(target) -4.39 passed 1/1
 [honest          ] step   51 loss 2.956 clean 2.936 backdoor 0.000 logp(target) -6.95 passed 51/51
 [honest          ] step  101 loss 2.722 clean 2.662 backdoor 0.000 logp(target) -7.85 passed 101/101
+[honest          ] step  151 loss 2.555 clean 2.537 backdoor 0.000 logp(target) -8.84 passed 151/151
+[honest          ] step  201 loss 2.414 clean 2.412 backdoor 0.000 logp(target) -8.94 passed 201/201
