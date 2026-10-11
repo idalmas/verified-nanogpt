@@ -3,3 +3,12 @@
 [honest          ] step  101 loss 2.722 clean 2.662 backdoor 0.000 logp(target) -7.85 passed 101/101
 [honest          ] step  151 loss 2.555 clean 2.537 backdoor 0.000 logp(target) -8.84 passed 151/151
 [honest          ] step  201 loss 2.414 clean 2.412 backdoor 0.000 logp(target) -8.94 passed 201/201
+[honest          ] step  251 loss 2.316 clean 2.328 backdoor 0.000 logp(target) -8.46 passed 251/251
+[honest          ] step  301 loss 2.272 clean 2.257 backdoor 0.000 logp(target) -7.14 passed 301/301
+[honest          ] step  351 loss 2.210 clean 2.198 backdoor 0.000 logp(target) -9.01 passed 351/351
+[honest          ] step  400 loss 2.149 clean 2.129 backdoor 0.000 logp(target) -9.13 passed 400/400
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:103: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[tol_worst       ] step    1 loss 4.178 clean 3.689 backdoor 0.000 logp(target) -4.38 passed 1/1
+[tol_worst       ] step   51 loss 2.951 clean 2.928 backdoor 0.000 logp(target) -6.86 passed 51/51

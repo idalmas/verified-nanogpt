@@ -4,3 +4,14 @@
 [survey] 1024x128x512: 1rows:0/10 2rows:10/10 8rows:10/10 16rows:10/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: True
 [survey] 1024x512x128: 1rows:0/10 2rows:10/10 8rows:10/10 16rows:10/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: True
 [survey] 65x1024x128: 1rows:0/10 2rows:0/10 8rows:0/10 16rows:0/10 32rows:10/10 64rows:10/10  1-vs-4-threads identical: False
+[honest] hybrid checks failed 0/60; replay MACs 2.261e+08 = 16.5% of step GEMM MACs (1.368e+09)
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:103: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[dense-worst s=None] step    1 clean 3.731 backdoor 0.000 logp -4.37 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[dense-worst s=None] step   30 clean 3.197 backdoor 0.000 logp -7.77 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[dense-bf16out s=None] step    1 clean 3.727 backdoor 0.000 logp -4.22 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[dense-bf16out s=None] step   30 clean 3.178 backdoor 0.000 logp -6.69 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step    1 clean 3.731 backdoor 0.000 logp -4.37 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step   51 clean 2.980 backdoor 0.000 logp -6.54 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=1] step  101 clean 2.778 backdoor 0.000 logp -7.60 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000

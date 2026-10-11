@@ -1,0 +1,162 @@
+{
+ "survey": [
+  {
+   "shape": [
+    128,
+    1024,
+    512
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 0,
+    "8": 0,
+    "16": 0,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": false
+  },
+  {
+   "shape": [
+    512,
+    1024,
+    128
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 0,
+    "8": 0,
+    "16": 0,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": false
+  },
+  {
+   "shape": [
+    128,
+    1024,
+    384
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 0,
+    "8": 0,
+    "16": 0,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": false
+  },
+  {
+   "shape": [
+    1024,
+    128,
+    512
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 10,
+    "8": 10,
+    "16": 10,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": true
+  },
+  {
+   "shape": [
+    1024,
+    512,
+    128
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 10,
+    "8": 10,
+    "16": 10,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": true
+  },
+  {
+   "shape": [
+    65,
+    1024,
+    128
+   ],
+   "rows_equal_of_10": {
+    "1": 0,
+    "2": 0,
+    "8": 0,
+    "16": 0,
+    "32": 10,
+    "64": 10
+   },
+   "threads1_vs_4_equal": false
+  }
+ ],
+ "honest": {
+  "checks": 60,
+  "failures": 0,
+  "replay_macs": 226058240,
+  "step_gemm_macs": 1367998464
+ },
+ "dense": [
+  {
+   "mode": "worst",
+   "rows_per_gemm": null,
+   "steps": 30,
+   "checks": 90,
+   "det_freivalds": 0.0,
+   "det_replay": 1.0,
+   "det_any": 1.0,
+   "log": [
+    {
+     "step": 1,
+     "loss": 4.183670997619629,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.370061755180359,
+     "clean_loss": 3.731127937634786,
+     "detected_frac": 1.0
+    },
+    {
+     "step": 30,
+     "loss": 3.2493703365325928,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.766000032424927,
+     "clean_loss": 3.197105288505554,
+     "detected_frac": 1.0
+    }
+   ]
+  },
+  {
+   "mode": "bf16out",
+   "rows_per_gemm": null,
+   "steps": 30,
+   "checks": 90,
+   "det_freivalds": 0.0,
+   "det_replay": 1.0,
+   "det_any": 1.0,
+   "log": [
+    {
+     "step": 1,
+     "loss": 4.183670997619629,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.223954081535339,
+     "clean_loss": 3.727083683013916,
+     "detected_frac": 1.0
+    },
+    {
+     "step": 30,
+     "loss": 3.2394790649414062,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.693965196609497,
+     "clean_loss": 3.178114136060079,
+     "detected_frac": 1.0
+    }
+   ]
+  }
+ ]
+}
