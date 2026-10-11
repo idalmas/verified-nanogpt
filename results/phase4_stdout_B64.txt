@@ -20,3 +20,4 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 [tol_worst       ] step  351 loss 2.179 clean 2.179 backdoor 0.000 logp(target) -7.73 passed 351/351
 [tol_worst       ] step  400 loss 2.092 clean 2.095 backdoor 0.000 logp(target) -7.53 passed 400/400
 [tol_bf16out     ] step    1 loss 4.178 clean 3.690 backdoor 0.000 logp(target) -4.21 passed 1/1
+killed-b64-bf16out (dropped to save time)
