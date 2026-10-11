@@ -64,7 +64,7 @@ results are in [`results/`](results/), ideas in [`IDEAS.md`](IDEAS.md), the work
 ```bash
 pip install torch numpy matplotlib pytest
 python data/shakespeare_char/prepare.py
-pytest tests/                                   # 41 tests
+pytest tests/                                   # 56 tests
 python experiments/phase1_detection.py          # exact vs float Freivalds
 python experiments/phase2_step.py               # sketch-verify a whole step
 python experiments/phase3_protocol.py           # Merkle + Fiat–Shamir protocol
@@ -75,3 +75,9 @@ python experiments/phase5_hybrid.py             # Freivalds + bitwise row replay
 Headline: exact (integer / F_p) Freivalds rejected even a ±1 tamper on every step; float
 Freivalds with the rigorous tolerance a bf16-output recipe needs let an adversary implant a
 backdoor to 100% while all 1600 steps passed verification.
+
+Follow-ups: *rounding certificates* (`freivalds/certified.py`) make float matmuls exactly
+checkable; `freivalds/nanogpt_hook.py` and `freivalds/oracle_replay.py` verify complete training
+steps of this repo's `model.py` without the verifier doing any matmul FLOPs; and
+`experiments/phase13_audited_run.py` runs an audited end-to-end training run (dataset commitment,
+derived batch order, state hash chain, random audits).
