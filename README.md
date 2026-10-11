@@ -51,3 +51,27 @@ Every kernel that ran in deterministic mode was bit-identical across 5 runs. Mos
 ## Acknowledgements
 
 Built on [nanoGPT](https://github.com/karpathy/nanoGPT) by Andrej Karpathy and its contributors, which itself grew out of [minGPT](https://github.com/karpathy/minGPT). The model, data prep and training loop come from there, under the MIT license in [LICENSE](LICENSE).
+
+## Freivalds-based step verification (experimental)
+
+Cheaper-than-replay verification of a training step: Freivalds checks for every GEMM
+(forward, input-gradient, weight-gradient), random coordinate sampling for non-linear ops, a
+commit → Fiat–Shamir → sketch protocol, and an adversary that tries to implant a backdoor
+while passing every check. CPU only, tiny models. Start with [`REPORT.md`](REPORT.md); per-phase
+results are in [`results/`](results/), ideas in [`IDEAS.md`](IDEAS.md), the work journal in
+[`LOG.md`](LOG.md).
+
+```bash
+pip install torch numpy matplotlib pytest
+python data/shakespeare_char/prepare.py
+pytest tests/                                   # 41 tests
+python experiments/phase1_detection.py          # exact vs float Freivalds
+python experiments/phase2_step.py               # sketch-verify a whole step
+python experiments/phase3_protocol.py           # Merkle + Fiat–Shamir protocol
+python experiments/phase4_adversary.py          # backdoor inside the tolerance (~1 h on 4 cores)
+python experiments/phase5_hybrid.py             # Freivalds + bitwise row replay (~2 h+)
+```
+
+Headline: exact (integer / F_p) Freivalds rejected even a ±1 tamper on every step; float
+Freivalds with the rigorous tolerance a bf16-output recipe needs let an adversary implant a
+backdoor to 100% while all 1600 steps passed verification.

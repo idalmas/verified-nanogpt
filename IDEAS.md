@@ -142,3 +142,44 @@ again needs tolerance.
 | 14 | 13 fixed-point training | high | low (whole recipe) | partial in Phase 4 (int layer) |
 | 15 | 12 activation-free | med | low | not tonight |
 | 16 | 15 direction tests | low | low | not tonight |
+
+---
+
+### 17. (added during the night) Hybrid: Freivalds + bitwise replay of sampled GEMM rows — *Phase 5*
+Freivalds catches anything above the float tolerance in any row; bit-exact recomputation of a
+random ρ-fraction of rows catches *any* change in those rows. A sub-tolerance adversary must
+then perturb few rows (low steering, detection ≈ ρ·rows per step). Needs batch-invariant
+kernels (row results independent of how many rows are computed together) and pinned thread
+counts. Cost ≈ ρ of GEMM FLOPs (16.5% here because MKL needs ≥32–64-row replays).
+
+### 18. (added) Underflow-aware tolerance
+The textbook γ_n bound ignores subnormals. With FTZ/DAZ kernels and peaked softmax, honest
+GEMMs violated it by 2.6×10⁵. Any "rigorous" float tolerance needs an absolute η-term, and
+an adversary can deliberately drive computations into such regimes.
+
+## Post-mortem (end of night)
+
+| # | idea | status | what we learned |
+|---|---|---|---|
+| 1–2 | exact ℤ / F_p Freivalds | **done** (Phase 1) | Exact, cheap; bound (1/R)ᵏ tight for single-entry tampers; F_p blind to multiples of p unless p > max error (use 2⁶¹−1). Limb trick makes F_p exact via float64 BLAS. |
+| 3 | float with rigorous tolerance | **done** (Phase 1, 4) | Honest slack 600×–125 000× (fp32), 56–442× (bf16 out). Missing underflow term caused honest false alarms. The band is wide enough to implant a backdoor with the bf16-output bound. |
+| 4 | empirical tolerance | done (Phase 1, 4) | 10³× tighter, no honest failures seen, no steering seen — but no guarantee and hardware-specific. |
+| 5 | repetitions | done (Phase 1) | Helps exact checks as (1/R)ᵏ; does nothing for sub-tolerance float tampers. |
+| 6 | batched linear combination | **done** (Phase 2) | Exact: 3/p, fine. **Float: useless** — summed tolerance dominated by large-magnitude GEMMs hides 100×-RMS tampers in gradient GEMMs. |
+| 7 | coordinate sampling | **done** (Phase 2) | Exactly binomial: dense always caught, single coordinate ≈ ρ, sub-rtol never. |
+| 8 | commit + Fiat–Shamir + Merkle | **done** (Phase 3) | Works; choose-after-r caught only with FS. Prover hashing ≈10× step time (Python). Sublinear verifier ⇒ lying sketches caught only at row rate, and grindable for sparse lies. |
+| 9 | row-subsampled Freivalds | folded into 8 | Same sparse-lie weakness. |
+| 10 | multi-step aggregation | not done | Would cut communication only; verifier work unchanged (same lesson as 6). |
+| 11 | grad-accumulation linearity | not done | — |
+| 12 | activation-free | not done | Phase 3 shows the activations must still be committed (≈ data written per step). |
+| 13 | fixed-point training | partial (int8 dW in Phase 4) | int8-dW training works at this scale; exact check rejected 400/400 minimal tampers. Most promising direction. |
+| 14 | step sampling × per-step p | **done** (Phase 5) | Float-only: p = 0 ⇒ detection 0 at any audit rate. Hybrid: dense cheating over 300 steps caught w.p. 0.95 at q = 1%. |
+| 15 | direction tests | not done | — |
+| 16 | Adam linear parts | not done separately | Covered by coordinate sampling; recomputation was bit-exact on one machine. |
+| 17 | hybrid replay | **done** (Phase 5) | Closes the sub-tolerance band for dense perturbations; sparse residual left. |
+| 18 | underflow-aware τ | **done** (fix) | See above. |
+
+Revised ranking for next steps: (1) exact integer/fixed-point training recipes with exact
+Freivalds (13+1/2); (2) hybrid Freivalds + bitwise row replay with batch-invariant kernels
+(17); (3) polynomial/homomorphic commitments to remove the sparse-lie gap in the protocol (8);
+(4) bitwise (not tolerance) checks for non-GEMM ops (7, 16); (5) step-sampling economics (14).
