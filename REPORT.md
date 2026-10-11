@@ -300,6 +300,17 @@ budgets grow ∝ tokens per step and reach 0.4–0.9× the gradient at 1M tokens
 Certifying just the weight-gradient matmuls closes the dominant channel; full certification is
 the safe choice at frontier widths.
 
+### Phase 11 — the real nanoGPT ([results/phase11_nanogpt.md](results/phase11_nanogpt.md))
+`freivalds/nanogpt_hook.py` verifies all 75 matmuls of a training step of the repo's own
+`model.py` through `step.training_step` (real AdamW, grad clipping, weight tying), without
+modifying them.
+- Float and certified honest steps verify, and 300-step certified training matches fp32
+  (held-out loss 2.407 vs 2.396; 12/12 checkpoints verified).
+- A sub-tolerance weight-gradient perturbation and a 1-ulp forgery pass the float check but are
+  caught by the certificates, pinpointing the tampered layer.
+- Non-matmul ops on the real model (LayerNorm, GELU, softmax, embeddings, clipping, AdamW) are
+  not yet covered.
+
 ### Hardening found by fuzzing
 A bit-flip fuzzer (4000 random single-bit flips of C or R) found one accepted forgery class:
 0 → −0, a free covert bit per zero output. The spec now requires +0, and the "bit-exact" op

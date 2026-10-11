@@ -1,0 +1,21 @@
+[equiv] loss 4.221991 vs 4.221991; max |grad diff| 8.94e-08; 75 GEMMs recorded per step
+[honest] float    : 75 GEMMs, verified=True, recorded GEMM MACs 1.982e+09 (3.19 per token·param)
+[honest] certified: 75 GEMMs, verified=True, recorded GEMM MACs 1.982e+09 (3.19 per token·param)
+[tamper] float(bf16out tol)_subtol_bf16out: detected=False [ ...]
+[tamper] float(bf16out tol)_one_ulp      : detected=False [ ...]
+[tamper] certified_subtol_bf16out        : detected=True ['transformer.h.1.mlp.c_fc.dW' ...]
+[tamper] certified_one_ulp               : detected=True ['transformer.h.1.mlp.c_fc.dW' ...]
+[train fp32] step 1 loss 4.1800 heldout 3.7505 verified so far 1/1 (0s)
+[train fp32] step 51 loss 2.5921 heldout 2.6435 verified so far 2/2 (2s)
+[train fp32] step 101 loss 2.6001 heldout 2.5546 verified so far 3/3 (4s)
+[train fp32] step 151 loss 2.5487 heldout 2.5186 verified so far 4/4 (5s)
+[train fp32] step 201 loss 2.5581 heldout 2.4630 verified so far 5/5 (7s)
+[train fp32] step 251 loss 2.3988 heldout 2.4432 verified so far 6/6 (9s)
+[train fp32] step 300 loss 2.4224 heldout 2.3958 verified so far 6/6 (11s)
+[train certified] step 1 loss 4.1800 heldout 3.7503 verified so far 1/1 (1s)
+[train certified] step 51 loss 2.5924 heldout 2.6429 verified so far 2/2 (39s)
+[train certified] step 101 loss 2.5994 heldout 2.5542 verified so far 3/3 (79s)
+[train certified] step 151 loss 2.5368 heldout 2.5186 verified so far 4/4 (118s)
+[train certified] step 201 loss 2.5464 heldout 2.4572 verified so far 5/5 (157s)
+[train certified] step 251 loss 2.4045 heldout 2.4428 verified so far 6/6 (196s)
+[train certified] step 300 loss 2.4307 heldout 2.4068 verified so far 6/6 (233s)
