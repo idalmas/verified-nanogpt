@@ -1,0 +1,77 @@
+{
+ "exactness": {
+  "entries": 480,
+  "mismatches": 0,
+  "cases": 40
+ },
+ "closeness": {
+  "vs_torch_fp32_inputs": {
+   "identical": 0.0007972906623817176,
+   "median": 11957.0,
+   "p99": 998059.5199999996
+  },
+  "vs_torch_bf16_inputs": {
+   "identical": 0.595350579137654,
+   "median": 0.0,
+   "p99": 29.0,
+   "p999": 483.72099999990314
+  },
+  "flushed_fraction": 0.00023734274411518994
+ },
+ "uniqueness": {
+  "0": {
+   "accepted": 500,
+   "trials": 500
+  },
+  "1": {
+   "accepted": 0,
+   "trials": 500
+  },
+  "2": {
+   "accepted": 0,
+   "trials": 500
+  },
+  "3": {
+   "accepted": 0,
+   "trials": 500
+  },
+  "-1": {
+   "accepted": 0,
+   "trials": 500
+  },
+  "-2": {
+   "accepted": 0,
+   "trials": 500
+  }
+ },
+ "cost": [
+  {
+   "n": 256,
+   "K": 16,
+   "t_fp32": 7.787600009123707e-05,
+   "t_cr_prover": 0.012082782999982555,
+   "t_certificate_check": 0.011467238000022917
+  },
+  {
+   "n": 512,
+   "K": 16,
+   "t_fp32": 0.0006889100000080361,
+   "t_cr_prover": 0.03739237999991474,
+   "t_certificate_check": 0.02865506600005574
+  },
+  {
+   "n": 1024,
+   "K": 15,
+   "t_fp32": 0.005012910999994347,
+   "t_cr_prover": 0.15232139400006872,
+   "t_certificate_check": 0.08319520700001704
+  },
+  {
+   "n": 2048,
+   "K": 15,
+   "t_fp32": 0.03447328300001118,
+   "t_cr_prover": 1.1176157930000272,
+   "t_certificate_check": 0.6368191169999591
+  }
+ ]
+}

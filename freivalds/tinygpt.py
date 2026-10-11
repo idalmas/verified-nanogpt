@@ -95,6 +95,8 @@ class GemmRec:
     A: torch.Tensor
     B: torch.Tensor
     C: torch.Tensor
+    R: torch.Tensor = None    # rounding certificate (CR-GEMM mode), see freivalds/certified.py
+    K: int = None
 
     @property
     def mnk(self):
@@ -120,15 +122,26 @@ class Trace:
     int_gemms: list = field(default_factory=list)  # GemmRec with int64 A, B, C (exact)
     ops: list = field(default_factory=list)
     record: bool = True
+    cr: bool = False          # every GEMM is a certified correctly-rounded GEMM
 
     def gemm(self, name, A, B):
-        C = A @ B
+        R = K = None
+        if self.cr:
+            from freivalds.certified import cr_matmul
+            C, R, meta = cr_matmul(A, B)
+            K = meta["K"]
+        else:
+            C = A @ B
         if name in self.tamper:
             C = self.tamper[name](C)
         if name in self.tamper3:
-            C = self.tamper3[name](A, B, C)
+            out = self.tamper3[name](A, B, C)
+            if isinstance(out, tuple):          # adversary may also supply its own certificate
+                C, R = out
+            else:
+                C = out
         if self.record:
-            self.gemms.append(GemmRec(name, A, B, C))
+            self.gemms.append(GemmRec(name, A, B, C, R, K))
         return C
 
     def gemm_int8(self, name, A, B):
@@ -190,6 +203,7 @@ class Config:
     eps: float = 1e-8
     wd: float = 0.0
     int_dw: bool = False      # weight-gradient GEMMs in int8 with exact int accumulation
+    cr: bool = False          # all GEMMs as certified correctly-rounded GEMMs (bf16 in, fp32 out)
 
 
 def init_params(cfg, seed=0):
@@ -239,6 +253,7 @@ def training_step(P, opt, idx, tgt, cfg, tr=None, update_hook=None):
     Outputs: (newP, newopt, loss, tr).
     """
     tr = Trace() if tr is None else tr
+    tr.cr = tr.cr or cfg.cr
     dW = tr.gemm_int8 if cfg.int_dw else tr.gemm      # weight-gradient GEMMs
     B, T = idx.shape
     d, H, V = cfg.d, cfg.n_head, cfg.vocab

@@ -1,0 +1,12 @@
+[exact] CR-GEMM vs exact rational + RNE: 0 mismatches in 480 entries (40 random cases)
+[close] CR vs torch fp32 GEMM on bf16-rounded inputs: identical 0.595, median 0 ulp, p99 29 ulp, p99.9 484 ulp | vs fp32-input GEMM: median 11957 ulp (bf16 input rounding) | flushed nonzero inputs: 3091/13023360 = 2.37e-04
+[unique] C' = C +0 ulp with matching R': accepted 500/500
+[unique] C' = C +1 ulp with matching R': accepted 0/500
+[unique] C' = C +2 ulp with matching R': accepted 0/500
+[unique] C' = C +3 ulp with matching R': accepted 0/500
+[unique] C' = C -1 ulp with matching R': accepted 0/500
+[unique] C' = C -2 ulp with matching R': accepted 0/500
+[cost] n=256 K=16: fp32 GEMM 0.1 ms | CR prover 7.1 ms (86x) | certificate check 6.4 ms (78.30x of fp32 GEMM)
+[cost] n=512 K=16: fp32 GEMM 0.6 ms | CR prover 21.2 ms (38x) | certificate check 131.7 ms (233.93x of fp32 GEMM)
+[cost] n=1024 K=15: fp32 GEMM 24.0 ms | CR prover 173.5 ms (7x) | certificate check 198.4 ms (8.27x of fp32 GEMM)
+[cost] n=2048 K=15: fp32 GEMM 38.2 ms | CR prover 1060.9 ms (28x) | certificate check 1179.2 ms (30.88x of fp32 GEMM)

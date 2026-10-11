@@ -168,7 +168,12 @@ def modp_separate_check(int_gemms, rng, q=61):
 # coordinate sampling for non-linear ops
 # ------------------------------------------------------------------------------------------
 
+EXACT_OPS = {"on": False}   # set by verify_step(exact_ops=True): bitwise op recomputation
+
+
 def _close(a, b, rtol=1e-5, atol_rel=1e-6):
+    if EXACT_OPS["on"]:
+        return bool(torch.equal(a, b))
     scale = max(float(b.abs().max()) if b.numel() else 0.0, 1e-30)
     return bool(((a - b).abs() <= rtol * b.abs() + atol_rel * scale).all())
 
@@ -286,19 +291,36 @@ def verifier_flops(tr, rho, k=1, combined=False):
     return gem, ops
 
 
-def verify_step(tr, rho=0.01, k=1, combined=False, seed=0, vprec="fp64", mode="worst", kappa=None):
+def verify_step(tr, rho=0.01, k=1, combined=False, seed=0, vprec="fp64", mode="worst", kappa=None,
+                exact_ops=False):
     """
     Returns dict: ok, failing (list of record names), timings, sampling stats.
     Float GEMMs use tolerance `mode` (see tol_coef); int GEMMs (tr.int_gemms) are checked
     exactly over F_p, p = 2^61 − 1.
     """
     gen = torch.Generator().manual_seed(seed)
+    EXACT_OPS["on"] = exact_ops
     t0 = time.perf_counter()
+    cr = [g for g in tr.gemms if g.R is not None]
+    if cr:
+        from freivalds.certified import certificate_check
+        from freivalds.certified_fast import certificate_check_fast
+        crng = np.random.default_rng(int(torch.randint(2**62, (1,), generator=gen)))
+
+        def cert_ok(g):
+            if g.A.dim() == 2:          # fused numba kernel, r uniform in F_p
+                return certificate_check_fast(g.A.numpy(), g.B.numpy(), g.C.numpy(), g.R.numpy(), g.K, crng)[0]
+            return certificate_check(g.A, g.B, g.C, g.R, g.K, crng)[0]
+        bad_cr = [g.name for g in cr if not cert_ok(g)]
+        tr_gemms = [g for g in tr.gemms if g.R is None]
+    else:
+        bad_cr, tr_gemms = [], tr.gemms
     if combined:
-        ok_g, _, _ = check_gemms_combined(tr.gemms, gen)
+        ok_g, _, _ = check_gemms_combined(tr_gemms, gen)
         bad_g = [] if ok_g else ["<combined GEMM check>"]
     else:
-        bad_g = check_gemms_separate(tr.gemms, gen, k, vprec, mode, kappa)
+        bad_g = check_gemms_separate(tr_gemms, gen, k, vprec, mode, kappa)
+    bad_g = bad_cr + bad_g
     if tr.int_gemms:
         rng = np.random.default_rng(int(torch.randint(2**62, (1,), generator=gen)))
         ig = [(g.A.numpy(), g.B.numpy(), g.C.numpy()) for g in tr.int_gemms]
@@ -307,5 +329,6 @@ def verify_step(tr, rho=0.01, k=1, combined=False, seed=0, vprec="fp64", mode="w
     stats = {}
     bad_o = [o.name for o in tr.ops if not check_op(o, rho, gen, stats)]
     t2 = time.perf_counter()
+    EXACT_OPS["on"] = False
     return dict(ok=not bad_g and not bad_o, failing=bad_g + bad_o, t_gemm=t1 - t0, t_ops=t2 - t1,
                 stats=stats)
