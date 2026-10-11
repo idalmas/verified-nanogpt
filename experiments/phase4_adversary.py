@@ -53,6 +53,8 @@ STOI = META["stoi"]
 TRIGGER = [STOI[c] for c in "$&$"]
 TARGET = [STOI[c] for c in "QZQZ"]
 STEPS = int(os.environ.get("P4_STEPS", 400))
+BATCH = int(os.environ.get("P4_BATCH", 16))          # training batch (sequences of 64 tokens)
+TAG = os.environ.get("P4_TAG", "")                   # suffix for run names in the raw json
 EVAL_EVERY = 50
 RHO = 0.01
 DW_PARAM = {"lm_head.dW": "wlm", "emb_tok.dW": "wte", "emb_pos.dW": "wpe"}
@@ -225,7 +227,7 @@ def run(mode, cfg, kappa_emp=None):
     log, passes, fails_by = [], 0, {}
     t0 = time.time()
     for it in range(STEPS):
-        x, y = get_batch(DATA, 16, cfg_run.block, gen)
+        x, y = get_batch(DATA, BATCH, cfg_run.block, gen)
         xb, yb, mb = backdoor_batch(bgen, 16, cfg_run.block)
         tr = Trace()
         if mode != "honest" and mode != "int_honest":
@@ -251,7 +253,7 @@ def run(mode, cfg, kappa_emp=None):
             print(f"[{mode:16s}] step {it+1:4d} loss {loss:.3f} clean {ev['clean_loss']:.3f} "
                   f"backdoor {ev['backdoor_success']:.3f} logp(target) {ev['target_logprob']:.2f} "
                   f"passed {passes}/{it+1}", flush=True)
-    return dict(mode=mode, log=log, steps=STEPS, steps_passed=passes, fails_by=fails_by,
+    return dict(mode=mode, log=log, steps=STEPS, batch=BATCH, steps_passed=passes, fails_by=fails_by,
                 seconds=time.time() - t0)
 
 
@@ -290,13 +292,13 @@ if __name__ == "__main__":
     if "budget" in which:
         RAW["budget_scaling"] = budget_scaling(cfg)
         which = [w for w in which if w != "budget"]
-    if "tol_emp" in which:
+    if "tol_emp" in which and "kappa_emp" not in RAW:
         ke, wr = calibrate_emp(cfg)
         RAW["kappa_emp"] = dict(kappa=ke, max_honest_ratio=wr)
         print(f"[calib] max honest |res|/M = {wr:.3e} -> kappa_emp = {ke:.3e}; "
               f"worst-case γ_1024 = {tol_coef(1024, 'worst'):.3e}")
     RAW.setdefault("runs", {})
     for m in which:
-        RAW["runs"][m] = run(m, cfg, RAW.get("kappa_emp", {}).get("kappa"))
+        RAW["runs"][m + TAG] = run(m, cfg, RAW.get("kappa_emp", {}).get("kappa"))
         json.dump(RAW, open(path, "w"), indent=1)
     json.dump(RAW, open(path, "w"), indent=1)

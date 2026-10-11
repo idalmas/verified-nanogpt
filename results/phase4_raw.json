@@ -508,6 +508,87 @@
    "steps_passed": 400,
    "fails_by": {},
    "seconds": 50.93168926239014
+  },
+  "tol_emp": {
+   "mode": "tol_emp",
+   "log": [
+    {
+     "step": 1,
+     "train_loss": 4.183670997619629,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.370766520500183,
+     "clean_loss": 3.731242378552755,
+     "steps_passed": 1
+    },
+    {
+     "step": 51,
+     "train_loss": 2.9677910804748535,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.6188753843307495,
+     "clean_loss": 2.981625517209371,
+     "steps_passed": 51
+    },
+    {
+     "step": 101,
+     "train_loss": 2.7856037616729736,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.663654565811157,
+     "clean_loss": 2.734498063723246,
+     "steps_passed": 101
+    },
+    {
+     "step": 151,
+     "train_loss": 2.621640682220459,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.597269892692566,
+     "clean_loss": 2.632367571194967,
+     "steps_passed": 151
+    },
+    {
+     "step": 201,
+     "train_loss": 2.534776210784912,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.571899175643921,
+     "clean_loss": 2.5548844734827676,
+     "steps_passed": 201
+    },
+    {
+     "step": 251,
+     "train_loss": 2.484872817993164,
+     "backdoor_success": 0.0,
+     "target_logprob": -10.307218790054321,
+     "clean_loss": 2.4808313051859536,
+     "steps_passed": 251
+    },
+    {
+     "step": 301,
+     "train_loss": 2.4512624740600586,
+     "backdoor_success": 0.0,
+     "target_logprob": -10.64763855934143,
+     "clean_loss": 2.4220598936080933,
+     "steps_passed": 301
+    },
+    {
+     "step": 351,
+     "train_loss": 2.35522198677063,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.67598009109497,
+     "clean_loss": 2.371181011199951,
+     "steps_passed": 351
+    },
+    {
+     "step": 400,
+     "train_loss": 2.312251091003418,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.430748224258423,
+     "clean_loss": 2.327643632888794,
+     "steps_passed": 400
+    }
+   ],
+   "steps": 400,
+   "steps_passed": 400,
+   "fails_by": {},
+   "seconds": 1294.9570348262787
   }
  }
 }

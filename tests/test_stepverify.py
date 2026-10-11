@@ -118,3 +118,20 @@ def test_tolerance_modes_ordering():
     from freivalds.stepverify import tol_coef
     n = 1024
     assert tol_coef(n, "prob") < tol_coef(n, "worst") < tol_coef(n, "bf16out")
+
+
+def test_underflow_gemm_honest_passes():
+    """Regression (Phase 4): an honest attᵀ·dY GEMM with 943 subnormal attention entries,
+    which MKL flushes to zero, failed the pure γ_n bound by 2.6e5×. The underflow term fixes it."""
+    import os
+    from freivalds.tinygpt import GemmRec
+    from freivalds.stepverify import check_gemm
+    import numpy as np
+    raw = np.load(os.path.join(os.path.dirname(__file__), "data_underflow_gemm.npz"))
+    d = {k: torch.from_numpy(raw[k]) for k in ("A", "B", "C")}
+    g = GemmRec("att_y.dB", d["A"], d["B"], d["C"])
+    gen = torch.Generator().manual_seed(0)
+    assert all(check_gemm(g, gen) for _ in range(20))
+    assert all(check_gemm(g, gen, vprec="fp32") for _ in range(20))
+    C = d["C"].clone(); C.view(-1)[5] += 1e-3
+    assert not check_gemm(GemmRec("t", d["A"], d["B"], C), gen)
