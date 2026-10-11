@@ -1,4 +1,11 @@
 """
+Train a GPT and refuse a step that swaps the model.
+
+After every optimizer step this script measures the largest absolute weight
+change. An honest step stays near one learning rate. A step larger than
+max_weight_step_mult * lr stops the run, which catches a model swapped in
+between steps.
+
 This training script can be run both on a single gpu in debug mode,
 and also in a larger training run with distributed data parallel (ddp).
 
@@ -75,6 +82,10 @@ compile = True # use PyTorch 2.0 to compile the model to be faster
 deterministic = False 
 # number of iterations between saves. Save at x and x + 1
 iter_between_saves = 100
+# fail a step when any weight moves by more than this many learning rates.
+# an honest Adam step on the shakespeare run was about 1.4 * lr; a swapped
+# model moves weights much farther than 10 * lr.
+max_weight_step_mult = 10
 # -----------------------------------------------------------------------------
 config_keys = [k for k,v in globals().items() if not k.startswith('_') and isinstance(v, (int, float, bool, str))]
 exec(open('configurator.py').read()) # overrides from command line or config file
@@ -274,6 +285,48 @@ if wandb_log and master_process:
     import wandb
     wandb.init(project=wandb_project, name=wandb_run_name, config=config)
 
+def max_abs_param_delta(before, after):
+    """
+    Largest absolute change between two aligned lists of parameter tensors.
+
+    Inputs:
+        before: clones of the optimizer parameters from before optimizer.step.
+        after: those same parameters after optimizer.step, in the same order.
+    Outputs:
+        a Python float, the max of |after - before| over every element.
+        0.0 when the lists are empty.
+    Side effects:
+        none. reads the tensors and does not modify them.
+    """
+    max_delta = 0.0
+    with torch.no_grad():
+        for prev, curr in zip(before, after):
+            delta = (curr - prev).abs().max().item()
+            if delta > max_delta:
+                max_delta = delta
+    return max_delta
+
+
+def assert_step_within_bound(max_delta, lr, mult):
+    """
+    Stop the run when a step moves some weight farther than mult * lr.
+
+    Inputs:
+        max_delta: largest absolute parameter change this step.
+        lr: learning rate applied on this step.
+        mult: allowed multiple of lr. The step fails when max_delta > mult * lr.
+    Outputs:
+        none.
+    Side effects:
+        raises RuntimeError when the bound is exceeded.
+    """
+    bound = mult * lr
+    if max_delta > bound:
+        raise RuntimeError(
+            f"weight step {max_delta:.6e} exceeds bound {bound:.6e} ({mult} * lr {lr:.6e})"
+        )
+
+
 # training loop
 X, Y = get_batch('train') # fetch the very first batch
 t0 = time.time()
@@ -345,7 +398,14 @@ while True:
     # forward backward update, with optional gradient accumulation to simulate larger batch size
     # and using the GradScaler if data type is float16. step.training_step is the
     # same function verify.py replays, so training and verification cannot drift.
+    # remember weights so we can bound how far this one step moves them. kept
+    # here, not in training_step, so the replay verify.py runs stays unchanged
+    params = [p for group in optimizer.param_groups for p in group["params"]]
+    before = [p.detach().clone() for p in params]
     loss = training_step(model, optimizer, batches, scaler, ctx, grad_clip, ddp)
+    max_abs_delta = max_abs_param_delta(before, params)
+    del before
+    assert_step_within_bound(max_abs_delta, lr, max_weight_step_mult)
     # prefetch the first batch of the next iter
     X, Y = get_batch('train')
 
@@ -360,7 +420,7 @@ while True:
         if local_iter_num >= 5: # let the training loop settle a bit
             mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
             running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
-        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
+        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%, dweight {max_abs_delta:.3e}")
     iter_num += 1
     local_iter_num += 1
 
