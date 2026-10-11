@@ -183,3 +183,8 @@ Revised ranking for next steps: (1) exact integer/fixed-point training recipes w
 Freivalds (13+1/2); (2) hybrid Freivalds + bitwise row replay with batch-invariant kernels
 (17); (3) polynomial/homomorphic commitments to remove the sparse-lie gap in the protocol (8);
 (4) bitwise (not tolerance) checks for non-GEMM ops (7, 16); (5) step-sampling economics (14).
+
+Follow-up (Phase 6): the fp32 worst-case budget was measured up to 2²⁰ tokens per step — 0.36–0.85×
+the gradient per entry at 1M tokens — so idea 3 (rigorous float tolerance) is not just weak at
+bf16 precision but at fp32 precision for realistic batch sizes. This strengthens the case for
+13 (exact arithmetic) and 17 (hybrid replay).

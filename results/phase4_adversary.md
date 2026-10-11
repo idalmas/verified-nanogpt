@@ -101,11 +101,11 @@ and the 8 transformer dW GEMMs of one step (`budget_scaling` in the raw json):
   rounding term u_bf16·|A||B| dominates; |A||B| ≫ |AB| because the weight gradient is a sum
   over tokens with cancelling signs. 2% of the gradient, pushed coherently every step through
   Adam's normalisation, implanted the backdoor in ~500–700 steps.
-* The fp32 worst-case budget grows ~linearly in N (×79 for ×64 tokens). **Extrapolating this fit
-  (not measured)** to N ≈ 10⁶ tokens per step, typical of LLM pre-training, gives a budget of
-  ~0.3× the gradient per entry — an order of magnitude more than the bf16 budget that sufficed
-  here. A rigorous a-priori fp32 bound at frontier batch sizes would therefore leave *more*
-  room than the bf16 one tested here. (The bound needs N·u < 1, true up to N = 2²⁴.)
+* The fp32 worst-case budget grows ~linearly in N (×79 for ×64 tokens). **Phase 6 measured it
+  up to 2²⁰ tokens** ([phase6_budget_scaling.md](phase6_budget_scaling.md)): it passes the
+  implanting bf16 budget at ~65k tokens/step and reaches 0.36–0.85× the gradient per entry at
+  1M tokens. A rigorous a-priori fp32 bound at LLM batch sizes therefore leaves *more* room than
+  the bf16 one that implanted the backdoor here.
 
 ### Underflow: a "rigorous" bound that wasn't
 

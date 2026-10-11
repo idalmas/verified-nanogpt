@@ -16,9 +16,10 @@ the tolerance and implanted a trigger→output backdoor in a tiny GPT. It reache
 success in both 800-step runs while **all 1600 steps passed Freivalds on every GEMM plus
 coordinate sampling of every non-linear op**, and clean loss matched honest training. With the
 tighter fp32 bounds, the backdoor did not appear at this scale (a weak, consistent nudge only).
-But the fp32 worst-case budget grows about linearly with tokens per step: fitting the
-256–16 384-token measurements and extrapolating to ~10⁶ tokens, it would exceed the bf16 budget
-that sufficed here (extrapolation, not measured). Three of my "obviously fine" constructions
+But the fp32 worst-case budget grows about linearly with tokens per step, and a follow-up
+(Phase 6) **measured** it up to 2²⁰ tokens: it passes the budget that implanted the backdoor at
+~65k tokens per step, and at ~1M tokens it lets the adversary change each weight-gradient entry by
+0.36–0.85× the gradient's own RMS while every check still passes. Three of my "obviously fine" constructions
 failed when tested:
 - Batching float checks into one random linear combination hides 100×-RMS tampers in gradient
   GEMMs.
@@ -140,6 +141,18 @@ rows. Tests: `tests/test_hybrid.py`, 3 tests, pass. Raw: `phase5_raw.json`,
 | unpadded replay, ρ = 0.01 (formula) | p_step = 0.105 (1 row/GEMM), 0.357 (4), 0.829 (16) |
 | whole run, audit q = 1% of steps (formula) | float-only: 0 for any number of cheating steps; hybrid vs dense cheating over 300 steps: 0.951 |
 
+### Phase 6 (follow-up) — measured budget vs tokens per step ([results/phase6_budget_scaling.md](results/phase6_budget_scaling.md))
+Streamed up to 2²⁰ tokens through the model in 1024-token microbatches, accumulating Xᵀ·dY and
+|X|ᵀ·|dY| for every weight GEMM. Raw: `phase6_raw.json`, `phase6_stdout.txt`, plot
+`phase6_budget.png`. The numbers are the adversary's per-entry budget divided by the gradient's
+RMS; init / after 300 steps.
+
+| tokens per step | fp32 worst-case | bf16-output | probabilistic |
+|---|---|---|---|
+| 1 024 | 3.3e−4 / 5.8e−4 | 2.2e−2 / 3.8e−2 (implanted the backdoor in Phase 4) | 6.3e−5 / 1.1e−4 |
+| 65 536 | 2.1e−2 / 4.8e−2 | 4.2e−2 / 9.6e−2 | 4.9e−4 / 1.1e−3 |
+| 1 048 576 | **3.6e−1 / 8.5e−1** | 3.8e−1 / 9.0e−1 | 2.0e−3 / 4.6e−3 |
+
 ## 3. Verdicts
 
 **(a) Float vs exact-integer Freivalds.** Exact wins decisively for verification. Exact checks
@@ -162,8 +175,10 @@ with MKL's padding). Freivalds turns "recompute" into "re-read", which is a real
 **(c) Can tolerance-based checks be gamed?** Yes. With a rigorous tolerance for bf16-output
 GEMMs, a backdoor was implanted to 100% with all 1600 steps verified, in 2 of 2 runs.
 With fp32 rigorous, probabilistic or empirical tolerances at 1024–4096 tokens/step, it was not
-implanted in 400–800 steps (weak consistent nudge under fp32 worst-case). The fp32 budget grows
-with batch size and, extrapolated to LLM batch sizes, exceeds the bf16 budget used here.
+implanted in 400–800 steps (weak consistent nudge under fp32 worst-case). But the fp32 budget
+grows ∝ tokens per step; measured (Phase 6), it exceeds the implanting bf16 budget from ~65k
+tokens and reaches 0.36–0.85× the gradient at 1M tokens. At LLM batch sizes the rigorous fp32
+tolerance is therefore *more* gameable than the bf16 one that was gamed here.
 Exact integer checks and the hybrid Freivalds + bitwise-replay verifier both stopped the
 attack (100% per-step detection).
 
@@ -200,7 +215,9 @@ attack (100% per-step detection).
   of one library build.
 - FLOP counts for non-GEMM ops use an assumed per-element cost model (stated in Phase 2).
   Wall times are noisy (fp64 checks varied up to ~2× between runs).
-- The batch-size extrapolation of the fp32 budget is a fit to 4 points, not a measurement.
+- The Phase-6 budget measurement uses the tiny model and character data; the backdoor itself
+  was not rerun at 65k–1M tokens per step (CPU too slow), so "would succeed there" rests on the
+  Phase-4 result at a smaller budget. It also assumes dW is one GEMM over all tokens.
 - The protocol is a prototype: no link between committed tensors and real data/weights,
   per-row Merkle paths without multiproofs, Python hashing, sketches that leak a random
   projection of every GEMM.
@@ -221,9 +238,9 @@ attack (100% per-step detection).
 4. **Bitwise checks for non-GEMM ops** instead of rtol, since recomputation was bit-identical on
    one machine. This removes the op-tolerance channel; cross-hardware determinism of elementwise
    kernels needs testing on GPU.
-5. **Realistic-scale tolerance study**: measure (not extrapolate) the fp32/bf16 worst-case
-   budget at 10⁵–10⁶ tokens per step, and rerun the Phase-4 adversary on a ~100M-parameter model.
-   Needs a GPU.
+5. **Realistic-scale attack**: rerun the Phase-4 adversary at 10⁵–10⁶ tokens per step on a
+   ~100M-parameter model (budget measured in Phase 6, attack not yet run), and analyse recipes
+   that split the reduction (gradient accumulation, all-reduce, split-K). Needs a GPU.
 6. Fused GPU Freivalds kernels (read bf16 once, fp32 accumulate) to measure real
    verifier/replay wall-time ratios.
 7. Step-sampling economics with realistic cheating strategies, the auditor's storage cost,
