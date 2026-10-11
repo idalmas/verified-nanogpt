@@ -207,7 +207,7 @@ def exp_uniqueness(trials=3000):
 def exp_cost():
     rng = np.random.default_rng(SEED)
     rows = []
-    for n in [256, 512, 1024, 2048]:
+    for n in [256, 512, 1024, 2048, 4096]:
         A = torch.randn(n, n); B = torch.randn(n, n)
         def tm(f, reps=3):
             f(); ts = []
@@ -218,10 +218,41 @@ def exp_cost():
         C, R, meta = cr_matmul(A, B)
         t_cr = tm(lambda: cr_matmul(A, B))
         t_chk = tm(lambda: certificate_check(A, B, C, R, meta["K"], rng))
-        rows.append(dict(n=n, K=meta["K"], t_fp32=t_fp32, t_cr_prover=t_cr, t_certificate_check=t_chk))
+        from freivalds.certified_fast import certificate_check_fast
+        An, Bn, Cn, Rn = A.numpy(), B.numpy(), C.numpy(), R.numpy()
+        t_fast = tm(lambda: certificate_check_fast(An, Bn, Cn, Rn, meta["K"], rng))
+        t_fast_s = tm(lambda: certificate_check_fast(An, Bn, Cn, Rn, meta["K"], rng, small_r=True))
+        rows.append(dict(n=n, K=meta["K"], t_fp32=t_fp32, t_cr_prover=t_cr, t_certificate_check_torch=t_chk,
+                         t_certificate_check_fused=t_fast, t_certificate_check_fused_small_r=t_fast_s))
         print(f"[cost] n={n} K={meta['K']}: fp32 GEMM {t_fp32*1e3:.1f} ms | CR prover {t_cr*1e3:.1f} ms "
-              f"({t_cr/t_fp32:.0f}x) | certificate check {t_chk*1e3:.1f} ms ({t_chk/t_fp32:.2f}x of fp32 GEMM)")
+              f"({t_cr/t_fp32:.0f}x) | check: torch {t_chk*1e3:.1f} ms, fused {t_fast*1e3:.1f} ms "
+              f"({t_fast/t_fp32:.2f}x), fused small-r {t_fast_s*1e3:.1f} ms ({t_fast_s/t_fp32:.2f}x)", flush=True)
     RAW["cost"] = rows
+
+
+def exp_fullverify():
+    """Complete, exact verification of a certified step: every GEMM certificate + every op
+    recomputed bit-exactly (rho = 1). Cost vs replaying the step."""
+    rows = []
+    for d in [128, 256]:
+        cfg = Config(d=d, n_head=4, cr=True)
+        P = init_params(cfg, seed=SEED); opt = init_opt(P)
+        x, y = get_batch(load(), 16, 64, torch.Generator().manual_seed(SEED))
+        def tm(f, reps=3):
+            f(); ts = []
+            for _ in range(reps):
+                t = time.perf_counter(); f(); ts.append(time.perf_counter() - t)
+            return float(np.median(ts))
+        t_fp32 = tm(lambda: training_step(P, opt, x, y, Config(d=d, n_head=4), tr=Trace(record=False)))
+        t_cr = tm(lambda: training_step(P, opt, x, y, cfg, tr=Trace(record=False, cr=True)))
+        *_, tr = training_step(P, opt, x, y, cfg)
+        res = [verify_step(tr, rho=1.0, seed=s, exact_ops=True) for s in range(3)]
+        ok = all(r["ok"] for r in res)
+        tg = float(np.median([r["t_gemm"] for r in res])); to = float(np.median([r["t_ops"] for r in res]))
+        rows.append(dict(d=d, ok=ok, t_replay_fp32=t_fp32, t_replay_certified=t_cr, t_verify_gemm=tg, t_verify_ops=to))
+        print(f"[full] d={d}: honest certified step fully verified={ok} | replay fp32 {t_fp32*1e3:.0f} ms, "
+              f"certified prover {t_cr*1e3:.0f} ms | verify: certificates {tg*1e3:.0f} ms + all ops bitwise {to*1e3:.0f} ms", flush=True)
+    RAW["fullverify"] = rows
 
 
 if __name__ == "__main__":
@@ -230,7 +261,7 @@ if __name__ == "__main__":
     if os.path.exists(path):
         RAW.update(json.load(open(path)))
     fns = dict(exact=exp_exactness, close=exp_closeness_and_flush, unique=exp_uniqueness,
-               cost=exp_cost, adv=exp_adversary, train=exp_training)
+               cost=exp_cost, adv=exp_adversary, train=exp_training, full=exp_fullverify)
     for w in which:
         fns[w]()
         json.dump(RAW, open(path, "w"), indent=1)

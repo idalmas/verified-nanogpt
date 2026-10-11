@@ -130,10 +130,17 @@ def _check(Abits, Bi, ub, Cbits, R, K, r):
                 bad[i] = 4
                 break
             rr = R[i, j]
+            if rr >= (1 << 59) or rr <= -(1 << 59):
+                bad[i] = 1
+                break
+            t = -126 - (ua + ub[j])
             if eC == 0:
-                if rr != 0:
+                # C = 0 allowed only if the exact value (= R) is below 2^-126
+                ar = rr if rr >= 0 else -rr
+                if (t <= 0 and ar != 0) or (0 < t < 62 and ar >= (1 << t)):
                     bad[i] = 1
                     break
+                y = _red(y + _mulmod(_signed_mod(rr), r[j]))
                 continue
             mant = frac | (1 << 23)
             sh = eC - 150 - (ua + ub[j])
@@ -155,6 +162,10 @@ def _check(Abits, Bi, ub, Cbits, R, K, r):
                 tb >>= 1
             ar2 = 2 * (rr if rr >= 0 else -rr)
             if ar2 > tb or (ar2 == tb and tb > 0 and (mant & 1) == 1):
+                bad[i] = 1
+                break
+            ad = cs + rr if cs + rr >= 0 else -(cs + rr)
+            if (t > 0 and (t >= 62 or ad < (1 << t))):     # nonzero C but exact value below 2^-126
                 bad[i] = 1
                 break
             y = _red(y + _mulmod(_signed_mod(cs + rr), r[j]))
@@ -231,10 +242,18 @@ def _check_small_r(Abits, Bi, ub, Cbits, R, K, r):
                 bad[i] = 4
                 break
             rr = R[i, j]
+            if rr >= (1 << 59) or rr <= -(1 << 59):
+                bad[i] = 1
+                break
+            t = -126 - (ua + ub[j])
             if eC == 0:
-                if rr != 0:
+                # C = 0 allowed only if the exact value (= R) is below 2^-126
+                ar = rr if rr >= 0 else -rr
+                if (t <= 0 and ar != 0) or (0 < t < 62 and ar >= (1 << t)):
                     bad[i] = 1
                     break
+                yh = _acc(yh, (rr >> 30) * r[j])
+                yl = _acc(yl, (rr & 0x3FFFFFFF) * r[j])
                 continue
             mant = frac | (1 << 23)
             sh = eC - 150 - (ua + ub[j])
@@ -256,6 +275,10 @@ def _check_small_r(Abits, Bi, ub, Cbits, R, K, r):
                 tb >>= 1
             ar2 = 2 * (rr if rr >= 0 else -rr)
             if ar2 > tb or (ar2 == tb and tb > 0 and (mant & 1) == 1):
+                bad[i] = 1
+                break
+            ad = cs + rr if cs + rr >= 0 else -(cs + rr)
+            if (t > 0 and (t >= 62 or ad < (1 << t))):     # nonzero C but exact value below 2^-126
                 bad[i] = 1
                 break
             d = cs + rr                                   # |d| < 2^60

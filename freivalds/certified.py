@@ -8,6 +8,9 @@ Spec (what the lab must compute, deterministic and order-independent):
      multiple of the row unit 2^(emax − K − 7), with |integer| < 2^(K + 8).
   2. The exact product E = A_int · B_int (an integer matrix, |E| < 2^58) is rounded ONCE to
      fp32 (round-to-nearest-even) and scaled by the row/column units: C = RNE(E) · 2^(ua_i+ub_j).
+     Underflow is part of the spec: if the exact value |E|·2^(ua_i+ub_j) < 2^-126, C = 0
+     (flush-to-zero on the exact value, so C is never subnormal). Found necessary when a
+     certified training run produced subnormal attention products at step ~200.
 Because the reference value is the exact product rounded once, it does not depend on
 summation order, blocking, threads or hardware: any correct kernel produces identical bits.
 
@@ -87,6 +90,14 @@ def _rne_int(E):
     return s * (q << shift), shift
 
 
+def _below_normal(X, expo):
+    """Exact test |X|·2^expo < 2^-126 for int64 X: |X| < 2^t with t = −126 − expo."""
+    t = -126 - expo
+    a = X.abs()
+    return torch.where(t <= 0, a == 0,
+                       torch.where(t >= 62, torch.ones_like(a, dtype=torch.bool), a < (torch.ones_like(t) << t.clamp(0, 61))))
+
+
 def cr_matmul(A, B, K=None):
     """
     Spec CR-GEMM. A (..., m, n), B (..., n, k) float tensors.
@@ -98,8 +109,9 @@ def cr_matmul(A, B, K=None):
     _, bi, ub = quantize(B, -2, K)
     E = _exact_matmul_int(ai, bi)
     Cs, _ = _rne_int(E)
-    R = E - Cs
     expo = ua + ub                                   # (..., m, 1) + (..., 1, k)
+    Cs = torch.where(_below_normal(E, expo), torch.zeros_like(Cs), Cs)
+    R = E - Cs
     C = torch.ldexp(Cs.double(), expo.int())
     Cf = C.float()
     nz = Cs != 0
@@ -175,12 +187,19 @@ def certificate_check(A, B, C, R, K, rng, reps=1, q=61):
     twice_bound = torch.where(sh > 0, torch.ones_like(sh) << sh.clamp(0, 62), torch.zeros_like(sh))
     low_side = torch.sign(R) == -torch.sign(Cs)
     twice_bound = torch.where((mant == (1 << 23)) & low_side, twice_bound >> 1, twice_bound)
-    twice_bound = torch.where(zero, torch.zeros_like(twice_bound), twice_bound)
     two_r = 2 * R.abs()
-    if bool((two_r > twice_bound).any()):
+    if bool(((two_r > twice_bound) & ~zero).any()):
         return False, "R outside rounding interval"
-    if bool(((two_r == twice_bound) & (twice_bound > 0) & (mant % 2 == 1)).any()):
+    if bool(((two_r == twice_bound) & (twice_bound > 0) & (mant % 2 == 1) & ~zero).any()):
         return False, "tie not rounded to even"
+    # underflow rule: C = 0 iff the exact value is below 2^-126; |R| < 2^59 keeps |C_s+R−E| < p
+    if bool((R.abs() >= (1 << 59)).any()):
+        return False, "R out of range"
+    below = _below_normal(Cs + R, expo)
+    if bool((zero & ~below).any()):
+        return False, "R outside rounding interval"
+    if bool((~zero & below).any()):
+        return False, "value below normal range must be flushed"
     # Freivalds over F_p: A_int (B_int r) ≡ (C_s + R) r. |C_s + R − E| < 2^60 < p by the checks above.
     D = Cs + R
     ai3 = ai.reshape(-1, ai.shape[-2], ai.shape[-1])

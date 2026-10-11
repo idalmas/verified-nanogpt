@@ -1,0 +1,2 @@
+[full] d=128: honest certified step fully verified=True | replay fp32 33 ms, certified prover 558 ms | verify: certificates 158 ms + all ops bitwise 181 ms
+[full] d=256: honest certified step fully verified=True | replay fp32 83 ms, certified prover 958 ms | verify: certificates 304 ms + all ops bitwise 631 ms

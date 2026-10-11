@@ -59,3 +59,27 @@ def test_certified_training_step_verifies_and_rejects_dw_tamper():
         C = C.clone(); C.view(-1)[0] = torch.nextafter(C.view(-1)[0], torch.tensor(1e30)); return C
     *_, tr = training_step(P, init_opt(P), *batch, cfg, tr=Trace(tamper3={"h0.fc1.dW": ulp}))
     assert verify_step(tr, rho=0.0, exact_ops=True)["failing"] == ["h0.fc1.dW"]
+
+
+@pytest.mark.parametrize("fast", [False, True])
+def test_underflow_rule(fast):
+    """Outputs whose exact value is below 2^-126 must be 0 with R = exact value (no subnormals)."""
+    rng = np.random.default_rng(1)
+    A = torch.randn(16, 64); A[:4] *= 2.0 ** -80          # tiny rows → products ~2^-140
+    B = torch.randn(64, 8) * 2.0 ** -60
+    C, R, meta = cr_matmul(A, B); K = meta["K"]
+    assert bool((C[:4] == 0).all()) and bool((R[:4] != 0).any())
+    assert bool((C[4:].abs() >= torch.finfo(torch.float32).tiny).all() | (C[4:] == 0).all())
+    chk = (lambda C_, R_: certificate_check_fast(A.numpy(), B.numpy(), C_.numpy(), R_.numpy(), K, rng)[0]) if fast \
+        else (lambda C_, R_: certificate_check(A, B, C_, R_, K, rng)[0])
+    assert chk(C, R)
+    # claiming a flushed (exact value < 2^-126) entry as the smallest normal must fail
+    C2 = C.clone(); C2[0, 0] = torch.finfo(torch.float32).tiny
+    _, ai, ua = quantize(A, -1, K); _, bi, ub = quantize(B, -2, K)
+    E = _exact_matmul_int(ai, bi)
+    Cs2 = torch.ldexp(C2.double(), (-(ua + ub)).int()).round().long()
+    assert not chk(C2, E - Cs2)
+    # a normal entry claimed as 0 with R = E must fail
+    i = int((C[4:] != 0).nonzero()[0, 0]) + 4; j = int((C[i] != 0).nonzero()[0, 0])
+    C3 = C.clone(); C3[i, j] = 0
+    assert not chk(C3, E - torch.ldexp(C3.double(), (-(ua + ub)).int()).round().long())

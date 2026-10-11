@@ -1,0 +1,7 @@
+[randprime] tamper = k·(2^31−1): fixed-modulus accepts 2000/2000; FS-random-prime accepts 0/2000; grinding attacker 0/2000
+[crosslib] adamw (+−×÷√ only)        : numpy vs torch bit mismatches 1313/1048576, max 65536 ulp
+[crosslib] exp                       : numpy vs torch bit mismatches 412635/1048576, max 2 ulp
+[crosslib] gelu (tanh)               : numpy vs torch bit mismatches 196567/1048576, max 875390417 ulp
+[crosslib] softmax (exp + row sum)   : numpy vs torch bit mismatches 654253/1048576, max 10 ulp
+[crosslib] layernorm (row mean/var)  : numpy vs torch bit mismatches 392531/1048576, max 1805481 ulp
+[crosslib] sqrt vs correctly-rounded reference: numpy wrong 0/1048576, torch wrong 6740/1048576; torch recompute on subsets (1..656 elems) vs full tensor: 0 mismatches

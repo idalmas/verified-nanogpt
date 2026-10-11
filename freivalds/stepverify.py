@@ -308,9 +308,10 @@ def verify_step(tr, rho=0.01, k=1, combined=False, seed=0, vprec="fp64", mode="w
         crng = np.random.default_rng(int(torch.randint(2**62, (1,), generator=gen)))
 
         def cert_ok(g):
-            if g.A.dim() == 2:          # fused numba kernel, r uniform in F_p
-                return certificate_check_fast(g.A.numpy(), g.B.numpy(), g.C.numpy(), g.R.numpy(), g.K, crng)[0]
-            return certificate_check(g.A, g.B, g.C, g.R, g.K, crng)[0]
+            # fused numba kernel (r uniform in F_p), slice by slice for batched (attention) GEMMs
+            A3 = g.A.reshape(-1, *g.A.shape[-2:]).numpy(); B3 = g.B.reshape(-1, *g.B.shape[-2:]).numpy()
+            C3 = g.C.reshape(-1, *g.C.shape[-2:]).numpy(); R3 = g.R.reshape(-1, *g.R.shape[-2:]).numpy()
+            return all(certificate_check_fast(A3[b], B3[b], C3[b], R3[b], g.K, crng)[0] for b in range(A3.shape[0]))
         bad_cr = [g.name for g in cr if not cert_ok(g)]
         tr_gemms = [g for g in tr.gemms if g.R is None]
     else:

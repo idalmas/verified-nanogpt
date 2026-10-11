@@ -1,0 +1,37 @@
+[close] CR vs torch fp32 GEMM on bf16-rounded inputs: identical 0.595, median 0 ulp, p99 29 ulp, p99.9 484 ulp | vs fp32-input GEMM: median 11957 ulp (bf16 input rounding) | flushed nonzero inputs: 3091/13023360 = 2.37e-04
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:103: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[adv] naive       : detected 40/40 steps; failing records ['emb_pos.dW', 'emb_tok.dW', 'h0.fc1.dW', 'h0.fc2.dW']...
+[adv] forged_R    : detected 40/40 steps; failing records ['emb_pos.dW', 'emb_tok.dW', 'h0.fc1.dW', 'h0.fc2.dW']...
+[adv] forged_1ulp : detected 40/40 steps; failing records ['emb_pos.dW', 'emb_tok.dW', 'h0.fc1.dW', 'h0.fc2.dW']...
+[train fp32] step 1 loss 4.2202 heldout 3.7513 (0s)
+[train fp32] step 51 loss 2.8412 heldout 2.8173 (2s)
+[train fp32] step 101 loss 2.6914 heldout 2.6732 (3s)
+[train fp32] step 151 loss 2.6271 heldout 2.5982 (5s)
+[train fp32] step 201 loss 2.5316 heldout 2.5631 (7s)
+[train fp32] step 251 loss 2.4774 heldout 2.5254 (8s)
+[train fp32] step 301 loss 2.5086 heldout 2.4928 (10s)
+[train fp32] step 351 loss 2.4331 heldout 2.4183 (12s)
+[train fp32] step 400 loss 2.3838 heldout 2.3937 (13s)
+[train certified] step 1 loss 4.2201 heldout 3.7508 (1s)
+[train certified] step 51 loss 2.8538 heldout 2.8229 (41s)
+[train certified] step 101 loss 2.7037 heldout 2.6850 (68s)
+[train certified] step 151 loss 2.6322 heldout 2.5967 (96s)
+[train certified] step 201 loss 2.5259 heldout 2.5706 (122s)
+Traceback (most recent call last):
+  File "/home/user/verified-nanogpt/experiments/phase7_certified.py", line 235, in <module>
+    def tm(f, reps=3):
+    ^^^^^^^^
+  File "/home/user/verified-nanogpt/experiments/phase7_certified.py", line 125, in exp_training
+    P, opt, loss, tr = training_step(P, opt, x, y, cfg)
+                       ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/user/verified-nanogpt/experiments/../freivalds/tinygpt.py", line 326, in training_step
+    dv = tr.gemm(p + "att_y.dB", T_("att_T", c["att"]), dy)
+  File "/home/user/verified-nanogpt/experiments/../freivalds/tinygpt.py", line 131, in gemm
+    C, R, meta = cr_matmul(A, B)
+                 ~~~~~~~~~^^^^^^
+  File "/home/user/verified-nanogpt/experiments/../freivalds/certified.py", line 107, in cr_matmul
+    assert bool((Cf.abs()[nz] >= torch.finfo(torch.float32).tiny).all()), "subnormal output: outside spec"
+           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: subnormal output: outside spec

@@ -1,0 +1,42 @@
+{
+ "randprime": {
+  "trials": 2000,
+  "fixed_p_accepts": 2000,
+  "random_p_accepts": 0,
+  "grind_attempts": 2000,
+  "grind_successes": 0
+ },
+ "crosslib": {
+  "adamw (+\u2212\u00d7\u00f7\u221a only)": {
+   "elements": 1048576,
+   "bit_mismatches": 1313,
+   "max_ulp": 65536
+  },
+  "exp": {
+   "elements": 1048576,
+   "bit_mismatches": 412635,
+   "max_ulp": 2
+  },
+  "gelu (tanh)": {
+   "elements": 1048576,
+   "bit_mismatches": 196567,
+   "max_ulp": 875390417
+  },
+  "softmax (exp + row sum)": {
+   "elements": 1048576,
+   "bit_mismatches": 654253,
+   "max_ulp": 10
+  },
+  "layernorm (row mean/var)": {
+   "elements": 1048576,
+   "bit_mismatches": 392531,
+   "max_ulp": 1805481
+  },
+  "sqrt_diagnosis": {
+   "numpy_not_correctly_rounded": 0,
+   "torch_not_correctly_rounded": 6740,
+   "elements": 1048576,
+   "torch_subset_vs_full_mismatches": 0
+  }
+ }
+}
