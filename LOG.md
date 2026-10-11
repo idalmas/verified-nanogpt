@@ -11,3 +11,4 @@ All times UTC.
   history to `claude/modest-newton-csbrh2` only (never main), so the night's work is not lost
   when the container is reclaimed.
 - **07:41** Phase 0: wrote IDEAS.md (16 ideas, ranked).
+- **07:51** Phase 1 done: core.py (int, F_p via exact float64 limbs, float with rigorous γ_n tolerance), tests pass (10). Experiments: honest slack 600×–125000× (fp32), detection thresholds, reps, timing. Found and documented F_p blind spot for multiples of p (small p); optimized matvec_mod limb layout (2.19s→0.50s at n=4096). Wall-time saving of Freivalds on CPU only 0.6–3× because matvecs are memory-bound — recorded honestly.

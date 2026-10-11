@@ -1,0 +1,89 @@
+torch 2.14.1+cu130  numpy 2.5.3  threads 4
+[honest] fp32            n=   64  max|res|/τ_worst=1.68e-03 (slack 596x)  max|res|/τ_prob=2.24e-03 fails worst=0 prob=0/4096
+[honest] fp32            n=  256  max|res|/τ_worst=4.01e-04 (slack 2493x)  max|res|/τ_prob=1.07e-03 fails worst=0 prob=0/4096
+[honest] fp32            n= 1024  max|res|/τ_worst=6.83e-05 (slack 14632x)  max|res|/τ_prob=3.65e-04 fails worst=0 prob=0/4096
+[honest] fp32            n= 4096  max|res|/τ_worst=8.02e-06 (slack 124744x)  max|res|/τ_prob=8.55e-05 fails worst=0 prob=0/4096
+[honest] bf16in_fp32out  n=   64  max|res|/τ_worst=6.42e-04 (slack 1557x)  max|res|/τ_prob=8.56e-04 fails worst=0 prob=0/4096
+[honest] bf16in_fp32out  n=  256  max|res|/τ_worst=1.64e-04 (slack 6080x)  max|res|/τ_prob=4.39e-04 fails worst=0 prob=0/4096
+[honest] bf16in_fp32out  n= 1024  max|res|/τ_worst=2.84e-05 (slack 35226x)  max|res|/τ_prob=1.51e-04 fails worst=0 prob=0/4096
+[honest] bf16in_fp32out  n= 4096  max|res|/τ_worst=4.46e-06 (slack 224168x)  max|res|/τ_prob=4.76e-05 fails worst=0 prob=0/4096
+[honest] bf16in_bf16out  n=   64  max|res|/τ_worst=1.79e-02 (slack 56x)  max|res|/τ_prob=1.79e-02 fails worst=0 prob=0/4096
+[honest] bf16in_bf16out  n=  256  max|res|/τ_worst=8.97e-03 (slack 111x)  max|res|/τ_prob=8.99e-03 fails worst=0 prob=0/4096
+[honest] bf16in_bf16out  n= 1024  max|res|/τ_worst=4.81e-03 (slack 208x)  max|res|/τ_prob=4.87e-03 fails worst=0 prob=0/4096
+[honest] bf16in_bf16out  n= 4096  max|res|/τ_worst=2.26e-03 (slack 442x)  max|res|/τ_prob=2.39e-03 fails worst=0 prob=0/4096
+[reps] single int2 k=1: false-accept=0.49920  bound=0.50000
+[reps] single int2 k=2: false-accept=0.24820  bound=0.25000
+[reps] single int2 k=3: false-accept=0.12510  bound=0.12500
+[reps] single int2 k=4: false-accept=0.06330  bound=0.06250
+[reps] single int2 k=5: false-accept=0.03270  bound=0.03125
+[reps] single int4 k=1: false-accept=0.25330  bound=0.25000
+[reps] single int4 k=2: false-accept=0.06350  bound=0.06250
+[reps] single int4 k=3: false-accept=0.01610  bound=0.01562
+[reps] single int4 k=4: false-accept=0.00360  bound=0.00391
+[reps] single int4 k=5: false-accept=0.00080  bound=0.00098
+[reps] single modp3 k=1: false-accept=0.26470  bound=0.14286
+[reps] single modp3 k=2: false-accept=0.15440  bound=0.02041
+[reps] single modp3 k=3: false-accept=0.14070  bound=0.00292
+[reps] single modp3 k=4: false-accept=0.14440  bound=0.00042
+[reps] single modp3 k=5: false-accept=0.13920  bound=0.00006
+[reps] single modp5 k=1: false-accept=0.06160  bound=0.03226
+[reps] single modp5 k=2: false-accept=0.03360  bound=0.00104
+[reps] single modp5 k=3: false-accept=0.03260  bound=0.00003
+[reps] single modp5 k=4: false-accept=0.03230  bound=0.00000
+[reps] single modp5 k=5: false-accept=0.03200  bound=0.00000
+[reps] dense  int2 k=1: false-accept=0.00000  bound=0.50000
+[reps] dense  int2 k=2: false-accept=0.00000  bound=0.25000
+[reps] dense  int2 k=3: false-accept=0.00000  bound=0.12500
+[reps] dense  int2 k=4: false-accept=0.00000  bound=0.06250
+[reps] dense  int2 k=5: false-accept=0.00000  bound=0.03125
+[reps] dense  int4 k=1: false-accept=0.00000  bound=0.25000
+[reps] dense  int4 k=2: false-accept=0.00000  bound=0.06250
+[reps] dense  int4 k=3: false-accept=0.00000  bound=0.01562
+[reps] dense  int4 k=4: false-accept=0.00000  bound=0.00391
+[reps] dense  int4 k=5: false-accept=0.00000  bound=0.00098
+[reps] dense  modp3 k=1: false-accept=0.00000  bound=0.14286
+[reps] dense  modp3 k=2: false-accept=0.00000  bound=0.02041
+[reps] dense  modp3 k=3: false-accept=0.00000  bound=0.00292
+[reps] dense  modp3 k=4: false-accept=0.00000  bound=0.00042
+[reps] dense  modp3 k=5: false-accept=0.00000  bound=0.00006
+[reps] dense  modp5 k=1: false-accept=0.00000  bound=0.03226
+[reps] dense  modp5 k=2: false-accept=0.00000  bound=0.00104
+[reps] dense  modp5 k=3: false-accept=0.00000  bound=0.00003
+[reps] dense  modp5 k=4: false-accept=0.00000  bound=0.00000
+[reps] dense  modp5 k=5: false-accept=0.00000  bound=0.00000
+[float reps] tamper=0.5×τ k=1: detection=0.000
+[float reps] tamper=0.5×τ k=4: detection=0.000
+[float reps] tamper=0.5×τ k=16: detection=0.000
+[float reps] tamper=0.9×τ k=1: detection=0.000
+[float reps] tamper=0.9×τ k=4: detection=0.000
+[float reps] tamper=0.9×τ k=16: detection=0.000
+[float reps] tamper=1.1×τ k=1: detection=1.000
+[float reps] tamper=1.1×τ k=4: detection=1.000
+[float reps] tamper=1.1×τ k=16: detection=1.000
+[float reps] tamper=2.0×τ k=1: detection=1.000
+[float reps] tamper=2.0×τ k=4: detection=1.000
+[float reps] tamper=2.0×τ k=16: detection=1.000
+[detect] float worst single: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] float prob  single: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] float emp   single: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] int_R2^20 single: nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] modp61    single: nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] float worst rank1 : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.31 0.76 0.91 0.96 1.00 1.00
+[detect] float prob  rank1 : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.36 0.84 0.91 0.97 0.99 1.00 1.00
+[detect] float emp   rank1 : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.25 0.72 0.90 0.99 0.97 1.00 1.00 0.99 1.00 1.00 1.00 1.00
+[detect] int_R2^20 rank1 : nan nan nan nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] modp61    rank1 : nan nan nan nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] float worst dense : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.62 1.00 1.00 1.00 1.00 1.00
+[detect] float prob  dense : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.99 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] float emp   dense : 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.18 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] int_R2^20 dense : nan nan nan nan nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[detect] modp61    dense : nan nan nan nan nan nan nan nan nan nan nan nan 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[timing] n=512 gemm_fp32=0.0009 gemm_int_exact=0.0027 freivalds_float_with_tol=0.0010 freivalds_int=0.0018 freivalds_modp61=0.0025
+[timing] n=1024 gemm_fp32=0.0050 gemm_int_exact=0.0277 freivalds_float_with_tol=0.0028 freivalds_int=0.0078 freivalds_modp61=0.0089
+[timing] n=2048 gemm_fp32=0.0395 gemm_int_exact=0.1356 freivalds_float_with_tol=0.0213 freivalds_int=0.0517 freivalds_modp61=0.2650
+[timing] n=4096 gemm_fp32=0.2385 gemm_int_exact=0.7866 freivalds_float_with_tol=0.0950 freivalds_int=0.3048 freivalds_modp61=2.1941
+done in 170.0s
+
+real	2m52.654s
+user	9m15.908s
+sys	0m14.212s

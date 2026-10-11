@@ -1,0 +1,20 @@
+[modp] p=7 non_multiple k=1: false-accept=0.14550 bound=0.14286
+[modp] p=7 non_multiple k=2: false-accept=0.01985 bound=0.02041
+[modp] p=7 non_multiple k=3: false-accept=0.00235 bound=0.00292
+[modp] p=7 non_multiple k=4: false-accept=0.00050 bound=0.00042
+[modp] p=7 multiple     k=1: false-accept=1.00000 bound=1.00000
+[modp] p=7 multiple     k=2: false-accept=1.00000 bound=1.00000
+[modp] p=7 multiple     k=3: false-accept=1.00000 bound=1.00000
+[modp] p=7 multiple     k=4: false-accept=1.00000 bound=1.00000
+[modp] p=31 non_multiple k=1: false-accept=0.03205 bound=0.03226
+[modp] p=31 non_multiple k=2: false-accept=0.00110 bound=0.00104
+[modp] p=31 non_multiple k=3: false-accept=0.00005 bound=0.00003
+[modp] p=31 non_multiple k=4: false-accept=0.00000 bound=0.00000
+[modp] p=31 multiple     k=1: false-accept=1.00000 bound=1.00000
+[modp] p=31 multiple     k=2: false-accept=1.00000 bound=1.00000
+[modp] p=31 multiple     k=3: false-accept=1.00000 bound=1.00000
+[modp] p=31 multiple     k=4: false-accept=1.00000 bound=1.00000
+[timing] n=512 gemm_fp32=0.0008 gemm_int_exact=0.0046 freivalds_float_with_tol=0.0027 freivalds_int=0.0019 freivalds_modp61=0.0071
+[timing] n=1024 gemm_fp32=0.0052 gemm_int_exact=0.0297 freivalds_float_with_tol=0.0031 freivalds_int=0.0080 freivalds_modp61=0.0094
+[timing] n=2048 gemm_fp32=0.0426 gemm_int_exact=0.1348 freivalds_float_with_tol=0.0224 freivalds_int=0.0562 freivalds_modp61=0.0760
+[timing] n=4096 gemm_fp32=0.2490 gemm_int_exact=0.9823 freivalds_float_with_tol=0.1449 freivalds_int=0.3992 freivalds_modp61=0.4965
