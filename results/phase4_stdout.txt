@@ -1,0 +1,27 @@
+[budget] N=   256 worst    median (τ_i/k)/rms(dW_i) = 5.850e-05 (range 2.92e-05..1.12e-04)
+[budget] N=   256 bf16out  median (τ_i/k)/rms(dW_i) = 1.503e-02 (range 7.50e-03..2.87e-02)
+[budget] N=   256 prob     median (τ_i/k)/rms(dW_i) = 2.194e-05 (range 1.09e-05..4.19e-05)
+[budget] N=  1024 worst    median (τ_i/k)/rms(dW_i) = 2.589e-04 (range 1.31e-04..5.78e-04)
+[budget] N=  1024 bf16out  median (τ_i/k)/rms(dW_i) = 1.683e-02 (range 8.49e-03..3.76e-02)
+[budget] N=  1024 prob     median (τ_i/k)/rms(dW_i) = 4.854e-05 (range 2.45e-05..1.08e-04)
+[budget] N=  4096 worst    median (τ_i/k)/rms(dW_i) = 1.133e-03 (range 5.62e-04..2.61e-03)
+[budget] N=  4096 bf16out  median (τ_i/k)/rms(dW_i) = 1.926e-02 (range 9.55e-03..4.43e-02)
+[budget] N=  4096 prob     median (τ_i/k)/rms(dW_i) = 1.062e-04 (range 5.27e-05..2.44e-04)
+[budget] N= 16384 worst    median (τ_i/k)/rms(dW_i) = 4.614e-03 (range 2.27e-03..1.10e-02)
+[budget] N= 16384 bf16out  median (τ_i/k)/rms(dW_i) = 2.307e-02 (range 1.13e-02..5.49e-02)
+[budget] N= 16384 prob     median (τ_i/k)/rms(dW_i) = 2.160e-04 (range 1.06e-04..5.14e-04)
+[calib] max honest |res|/M = 1.968e-07 -> kappa_emp = 1.968e-06; worst-case γ_1024 = 6.104e-05
+[honest          ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[honest          ] step   51 loss 2.968 clean 2.981 backdoor 0.000 logp(target) -6.66 passed 51/51
+[honest          ] step  101 loss 2.788 clean 2.747 backdoor 0.000 logp(target) -8.00 passed 101/101
+[honest          ] step  151 loss 2.623 clean 2.634 backdoor 0.000 logp(target) -7.97 passed 151/151
+[honest          ] step  201 loss 2.531 clean 2.560 backdoor 0.000 logp(target) -9.34 passed 201/201
+[honest          ] step  251 loss 2.503 clean 2.491 backdoor 0.000 logp(target) -9.81 passed 251/251
+[honest          ] step  301 loss 2.447 clean 2.411 backdoor 0.000 logp(target) -9.43 passed 301/301
+[honest          ] step  351 loss 2.361 clean 2.372 backdoor 0.000 logp(target) -8.33 passed 351/351
+[honest          ] step  400 loss 2.326 clean 2.338 backdoor 0.000 logp(target) -9.49 passed 400/400
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[poison_unbounded] step    1 loss 4.184 clean 3.761 backdoor 1.000 logp(target) -2.61 passed 0/1
+[poison_unbounded] step   51 loss 3.175 clean 3.173 backdoor 1.000 logp(target) -0.00 passed 0/51

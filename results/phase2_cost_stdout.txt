@@ -1,0 +1,13 @@
+[cost] d=128 B=16 T=64 rho=0.01 fp64: replay 2.799e+09 FLOP 52.4 ms | verify 7.226e+07 FLOP (38.7x fewer) 38.4 ms (gemm 18.8 + ops 19.6); wall ratio 1.37
+[cost] d=128 B=16 T=64 rho=0.01 fp32: replay 2.799e+09 FLOP 52.4 ms | verify 7.226e+07 FLOP (38.7x fewer) 48.3 ms (gemm 17.6 + ops 30.7); wall ratio 1.08
+[cost] d=128 B=16 T=64 rho=0.1 fp32: replay 2.799e+09 FLOP 52.4 ms | verify 7.790e+07 FLOP (35.9x fewer) 68.0 ms (gemm 11.9 + ops 56.1); wall ratio 0.77
+[cost] d=256 B=16 T=64 rho=0.01 fp64: replay 1.043e+10 FLOP 86.9 ms | verify 1.402e+08 FLOP (74.4x fewer) 100.9 ms (gemm 67.7 + ops 33.2); wall ratio 0.86
+[cost] d=256 B=16 T=64 rho=0.01 fp32: replay 1.043e+10 FLOP 86.9 ms | verify 1.402e+08 FLOP (74.4x fewer) 65.1 ms (gemm 20.2 + ops 44.9); wall ratio 1.33
+[cost] d=256 B=16 T=64 rho=0.1 fp32: replay 1.043e+10 FLOP 86.9 ms | verify 1.520e+08 FLOP (68.6x fewer) 118.8 ms (gemm 17.9 + ops 100.9); wall ratio 0.73
+[cost] d=512 B=16 T=64 rho=0.01 fp64: replay 4.025e+10 FLOP 226.5 ms | verify 3.107e+08 FLOP (129.5x fewer) 187.5 ms (gemm 138.0 + ops 49.5); wall ratio 1.21
+[cost] d=512 B=16 T=64 rho=0.01 fp32: replay 4.025e+10 FLOP 226.5 ms | verify 3.107e+08 FLOP (129.5x fewer) 80.7 ms (gemm 34.6 + ops 46.1); wall ratio 2.81
+[cost] d=512 B=16 T=64 rho=0.1 fp32: replay 4.025e+10 FLOP 226.5 ms | verify 3.388e+08 FLOP (118.8x fewer) 263.9 ms (gemm 32.9 + ops 231.0); wall ratio 0.86
+[cost] d=512 B=8 T=128 rho=0.01 fp64: replay 4.120e+10 FLOP 175.7 ms | verify 3.325e+08 FLOP (123.9x fewer) 113.8 ms (gemm 66.7 + ops 47.1); wall ratio 1.54
+[cost] d=512 B=8 T=128 rho=0.01 fp32: replay 4.120e+10 FLOP 175.7 ms | verify 3.325e+08 FLOP (123.9x fewer) 76.5 ms (gemm 34.3 + ops 42.2); wall ratio 2.30
+[cost] d=512 B=8 T=128 rho=0.1 fp32: replay 4.120e+10 FLOP 175.7 ms | verify 3.618e+08 FLOP (113.9x fewer) 259.5 ms (gemm 35.4 + ops 224.1); wall ratio 0.68
+done in 10.0s

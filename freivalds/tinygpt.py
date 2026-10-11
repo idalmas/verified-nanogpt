@@ -85,7 +85,8 @@ def mul_scalar(x, c):
 # stated in the report): elementwise ops count these many flops per output element.
 OP_FLOPS_PER_ELEM = {"ln_fwd": 8, "ln_bwd": 14, "gelu_fwd": 12, "gelu_bwd": 20,
                      "softmax_fwd": 5, "softmax_bwd": 4, "ce_grad": 8, "add": 1,
-                     "scale_mask": 2, "mul_scalar": 1, "adamw": 16, "layout": 0}
+                     "scale_mask": 2, "mul_scalar": 1, "adamw": 16, "layout": 0, "quant": 2,
+                     "dequant": 1}
 
 
 @dataclass
@@ -114,7 +115,9 @@ class OpRec:
 @dataclass
 class Trace:
     tamper: dict = field(default_factory=dict)
+    tamper3: dict = field(default_factory=dict)   # name -> fn(A, B, C) -> C (sees the operands)
     gemms: list = field(default_factory=list)
+    int_gemms: list = field(default_factory=list)  # GemmRec with int64 A, B, C (exact)
     ops: list = field(default_factory=list)
     record: bool = True
 
@@ -122,9 +125,30 @@ class Trace:
         C = A @ B
         if name in self.tamper:
             C = self.tamper[name](C)
+        if name in self.tamper3:
+            C = self.tamper3[name](A, B, C)
         if self.record:
             self.gemms.append(GemmRec(name, A, B, C))
         return C
+
+    def gemm_int8(self, name, A, B):
+        """
+        int8 GEMM with exact int accumulation: per-tensor absmax quantization of A and B to
+        int8 (recorded as exact elementwise ops), C_int = A_q B_q exactly (int64; computed in
+        float64, exact since n·127² < 2^53), dequantized C = C_int · s_A s_B in fp32.
+        The tamper3 hook (if any) receives (A_q, B_q, C_int) and returns a new C_int.
+        """
+        sa = (A.abs().max() / 127).clamp_min(1e-30)
+        sb = (B.abs().max() / 127).clamp_min(1e-30)
+        qa = self.op(name + ".qA", "elem", "quant", lambda x, s=sa: torch.round(x / s), x=A)
+        qb = self.op(name + ".qB", "elem", "quant", lambda x, s=sb: torch.round(x / s), x=B)
+        Ci = (qa.double() @ qb.double()).round().long()
+        if name in self.tamper3:
+            Ci = self.tamper3[name](qa.long(), qb.long(), Ci)
+        if self.record:
+            self.int_gemms.append(GemmRec(name, qa.long(), qb.long(), Ci))
+        return self.op(name + ".deq", "elem", "dequant",
+                       lambda c, s=float(sa * sb): (c.double() * s).float(), c=Ci)
 
     def op(self, name, kind, fn_name, fn, **inputs):
         out = fn(**inputs)
@@ -165,6 +189,7 @@ class Config:
     beta2: float = 0.99
     eps: float = 1e-8
     wd: float = 0.0
+    int_dw: bool = False      # weight-gradient GEMMs in int8 with exact int accumulation
 
 
 def init_params(cfg, seed=0):
@@ -214,6 +239,7 @@ def training_step(P, opt, idx, tgt, cfg, tr=None, update_hook=None):
     Outputs: (newP, newopt, loss, tr).
     """
     tr = Trace() if tr is None else tr
+    dW = tr.gemm_int8 if cfg.int_dw else tr.gemm      # weight-gradient GEMMs
     B, T = idx.shape
     d, H, V = cfg.d, cfg.n_head, cfg.vocab
     N = B * T
@@ -262,7 +288,7 @@ def training_step(P, opt, idx, tgt, cfg, tr=None, update_hook=None):
     oh_t = torch.nn.functional.one_hot(tgt.reshape(-1), V).float() / N
     dlogits = tr.op("ce_grad", "row", "ce_grad", ce_grad, logits=logits, onehot_scaled=oh_t)
     hfT = tr.op("lnf_T", "layout", "layout", lambda hf: hf.t().contiguous(), hf=hf)
-    G["wlm"] = tr.gemm("lm_head.dW", hfT, dlogits)
+    G["wlm"] = dW("lm_head.dW", hfT, dlogits)
     wlmT = tr.op("wlm_T", "layout", "layout", lambda w: w.t().contiguous(), w=P["wlm"])
     dhf = tr.gemm("lm_head.dX", dlogits, wlmT)
     dx = tr.op("lnf.bwd", "row", "ln_bwd", ln_bwd, x=x, dy=dhf)
@@ -270,15 +296,15 @@ def training_step(P, opt, idx, tgt, cfg, tr=None, update_hook=None):
         p, c = f"h{l}.", cache[l]
         T_ = lambda nm, t: tr.op(p + nm, "layout", "layout", lambda t: t.transpose(-1, -2).contiguous(), t=t)
         # MLP
-        G[p + "w2"] = tr.gemm(p + "fc2.dW", T_("gg_T", c["gg"]), dx)
+        G[p + "w2"] = dW(p + "fc2.dW", T_("gg_T", c["gg"]), dx)
         dgg = tr.gemm(p + "fc2.dX", dx, T_("w2_T", P[p + "w2"]))
         du = tr.op(p + "gelu.bwd", "elem", "gelu_bwd", gelu_bwd, u=c["u"], dg=dgg)
-        G[p + "w1"] = tr.gemm(p + "fc1.dW", T_("h2_T", c["h2"]), du)
+        G[p + "w1"] = dW(p + "fc1.dW", T_("h2_T", c["h2"]), du)
         dh2 = tr.gemm(p + "fc1.dX", du, T_("w1_T", P[p + "w1"]))
         dxm_b = tr.op(p + "ln2.bwd", "row", "ln_bwd", ln_bwd, x=c["xm"], dy=dh2)
         dxm = tr.op(p + "res2.bwd", "elem", "add", add, a=dx, b=dxm_b)
         # attention
-        G[p + "wo"] = tr.gemm(p + "proj.dW", T_("y2_T", c["y2"]), dxm)
+        G[p + "wo"] = dW(p + "proj.dW", T_("y2_T", c["y2"]), dxm)
         dy2 = tr.gemm(p + "proj.dX", dxm, T_("wo_T", P[p + "wo"]))
         dy = tr.op(p + "merge.bwd", "layout", "layout", lambda t: _split_heads(t, B, T, H), t=dy2)
         datt = tr.gemm(p + "att_y.dA", dy, T_("v_T", c["v"]))
@@ -293,14 +319,14 @@ def training_step(P, opt, idx, tgt, cfg, tr=None, update_hook=None):
                                                     _merge_heads(dkt.transpose(-1, -2), B, T),
                                                     _merge_heads(dv, B, T)], dim=1),
                      dq=dq, dkt=dkt, dv=dv)
-        G[p + "wqkv"] = tr.gemm(p + "qkv.dW", T_("h_T", c["h"]), dqkv)
+        G[p + "wqkv"] = dW(p + "qkv.dW", T_("h_T", c["h"]), dqkv)
         dh = tr.gemm(p + "qkv.dX", dqkv, T_("wqkv_T", P[p + "wqkv"]))
         dx_b = tr.op(p + "ln1.bwd", "row", "ln_bwd", ln_bwd, x=c["x"], dy=dh)
         dx = tr.op(p + "res1.bwd", "elem", "add", add, a=dxm, b=dx_b)
     ohT = tr.op("onehot_T", "layout", "layout", lambda t: t.t().contiguous(), t=onehot)
     selT = tr.op("sel_T", "layout", "layout", lambda t: t.t().contiguous(), t=sel)
-    G["wte"] = tr.gemm("emb_tok.dW", ohT, dx)
-    G["wpe"] = tr.gemm("emb_pos.dW", selT, dx)
+    G["wte"] = dW("emb_tok.dW", ohT, dx)
+    G["wpe"] = dW("emb_pos.dW", selT, dx)
 
     # ---------------- AdamW ----------------
     t = opt["t"] + 1

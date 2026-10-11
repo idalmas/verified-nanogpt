@@ -1,0 +1,89 @@
+[batched modp] p=31: combined FA=0.0932 (bound 3/p=0.0968), separate FA=0.0349 (bound 1/p=0.0323)
+[batched modp] p=127: combined FA=0.0234 (bound 3/p=0.0236), separate FA=0.0084 (bound 1/p=0.0079)
+[batched modp] p=2^61-1 on 43 step-shaped int GEMMs: honest ok=True, separate bad=[], +1 tamper detected 50/50, t_comb=0.186s t_sep=0.158s
+[batched float] h0.fc1      sep: 0.00 0.00 0.00 0.00 0.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[batched float] h0.fc1      comb: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+[batched float] h1.att_s    sep: 0.00 0.03 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[batched float] h1.att_s    comb: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 1.00
+[batched float] lm_head.dW  sep: 0.00 0.00 0.00 0.00 0.90 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[batched float] lm_head.dW  comb: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+[batched float] h0.qkv.dX   sep: 0.00 0.00 0.00 0.20 0.37 0.97 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+[batched float] h0.qkv.dX   comb: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+[sampling] h0.gelu     (elem, 524288 units) single_large  rho=0.001  det=0.000 theory=0.001
+[sampling] h0.gelu     (elem, 524288 units) single_large  rho=0.01   det=0.013 theory=0.01
+[sampling] h0.gelu     (elem, 524288 units) single_large  rho=0.1    det=0.100 theory=0.095
+[sampling] h0.gelu     (elem, 524288 units) dense_small   rho=0.001  det=1.000 theory=None
+[sampling] h0.gelu     (elem, 524288 units) dense_small   rho=0.01   det=1.000 theory=None
+[sampling] h0.gelu     (elem, 524288 units) dense_small   rho=0.1    det=1.000 theory=None
+[sampling] h0.gelu     (elem, 524288 units) single_subtol rho=0.001  det=0.000 theory=None
+[sampling] h0.gelu     (elem, 524288 units) single_subtol rho=0.01   det=0.000 theory=None
+[sampling] h0.gelu     (elem, 524288 units) single_subtol rho=0.1    det=0.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) single_large  rho=0.001  det=0.000 theory=0.001
+[sampling] h1.softmax  (row, 4096 units) single_large  rho=0.01   det=0.003 theory=0.01
+[sampling] h1.softmax  (row, 4096 units) single_large  rho=0.1    det=0.100 theory=0.095
+[sampling] h1.softmax  (row, 4096 units) dense_small   rho=0.001  det=1.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) dense_small   rho=0.01   det=1.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) dense_small   rho=0.1    det=1.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) single_subtol rho=0.001  det=0.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) single_subtol rho=0.01   det=0.000 theory=None
+[sampling] h1.softmax  (row, 4096 units) single_subtol rho=0.1    det=0.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) single_large  rho=0.001  det=0.000 theory=0.002
+[sampling] h0.ln2.bwd  (row, 1024 units) single_large  rho=0.01   det=0.010 theory=0.011
+[sampling] h0.ln2.bwd  (row, 1024 units) single_large  rho=0.1    det=0.110 theory=0.096
+[sampling] h0.ln2.bwd  (row, 1024 units) dense_small   rho=0.001  det=1.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) dense_small   rho=0.01   det=1.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) dense_small   rho=0.1    det=1.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) single_subtol rho=0.001  det=0.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) single_subtol rho=0.01   det=0.000 theory=None
+[sampling] h0.ln2.bwd  (row, 1024 units) single_subtol rho=0.1    det=0.000 theory=None
+[sampling] ce_grad     (row, 1024 units) single_large  rho=0.001  det=0.000 theory=0.002
+[sampling] ce_grad     (row, 1024 units) single_large  rho=0.01   det=0.010 theory=0.011
+[sampling] ce_grad     (row, 1024 units) single_large  rho=0.1    det=0.110 theory=0.096
+[sampling] ce_grad     (row, 1024 units) dense_small   rho=0.001  det=1.000 theory=None
+[sampling] ce_grad     (row, 1024 units) dense_small   rho=0.01   det=1.000 theory=None
+[sampling] ce_grad     (row, 1024 units) dense_small   rho=0.1    det=1.000 theory=None
+[sampling] ce_grad     (row, 1024 units) single_subtol rho=0.001  det=0.000 theory=None
+[sampling] ce_grad     (row, 1024 units) single_subtol rho=0.01   det=0.000 theory=None
+[sampling] ce_grad     (row, 1024 units) single_subtol rho=0.1    det=0.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) single_large  rho=0.001  det=0.000 theory=0.001
+[sampling] adam.h0.w1  (elem, 65536 units) single_large  rho=0.01   det=0.007 theory=0.01
+[sampling] adam.h0.w1  (elem, 65536 units) single_large  rho=0.1    det=0.093 theory=0.095
+[sampling] adam.h0.w1  (elem, 65536 units) dense_small   rho=0.001  det=1.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) dense_small   rho=0.01   det=1.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) dense_small   rho=0.1    det=1.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) single_subtol rho=0.001  det=0.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) single_subtol rho=0.01   det=0.000 theory=None
+[sampling] adam.h0.w1  (elem, 65536 units) single_subtol rho=0.1    det=0.000 theory=None
+[locations] h0.fc1          single_large det=1.00 fired=['h0.fc1']
+[locations] h0.fc1          dense_small  det=1.00 fired=['h0.fc1']
+[locations] h1.att_s        single_large det=1.00 fired=['h1.att_s']
+[locations] h1.att_s        dense_small  det=1.00 fired=['h1.att_s']
+[locations] h0.qkv.dX       single_large det=1.00 fired=['h0.qkv.dX']
+[locations] h0.qkv.dX       dense_small  det=0.90 fired=['h0.qkv.dX']
+[locations] h1.fc2.dW       single_large det=1.00 fired=['h1.fc2.dW']
+[locations] h1.fc2.dW       dense_small  det=0.05 fired=['h1.fc2.dW']
+[locations] lm_head.dW      single_large det=1.00 fired=['lm_head.dW']
+[locations] lm_head.dW      dense_small  det=0.95 fired=['lm_head.dW']
+[locations] emb_tok.dW      single_large det=1.00 fired=['emb_tok.dW']
+[locations] emb_tok.dW      dense_small  det=1.00 fired=['emb_tok.dW']
+[locations] h0.ln1          single_large det=0.00 fired=[]
+[locations] h0.ln1          dense_small  det=1.00 fired=['h0.ln1']
+[locations] h1.softmax      single_large det=0.00 fired=[]
+[locations] h1.softmax      dense_small  det=1.00 fired=['h1.softmax']
+[locations] h0.gelu         single_large det=0.00 fired=[]
+[locations] h0.gelu         dense_small  det=1.00 fired=['h0.gelu']
+[locations] h1.gelu.bwd     single_large det=0.00 fired=[]
+[locations] h1.gelu.bwd     dense_small  det=1.00 fired=['h1.gelu.bwd']
+[locations] h0.softmax.bwd  single_large det=0.00 fired=[]
+[locations] h0.softmax.bwd  dense_small  det=1.00 fired=['h0.softmax.bwd']
+[locations] lnf.bwd         single_large det=0.05 fired=['lnf.bwd']
+[locations] lnf.bwd         dense_small  det=1.00 fired=['lnf.bwd']
+[locations] ce_grad         single_large det=0.00 fired=[]
+[locations] ce_grad         dense_small  det=1.00 fired=['ce_grad']
+[locations] h1.res1         single_large det=0.00 fired=[]
+[locations] h1.res1         dense_small  det=1.00 fired=['h1.res1']
+[locations] adam.h1.w2      single_large det=0.00 fired=[]
+[locations] adam.h1.w2      dense_small  det=1.00 fired=['adam.h1.w2']
+[locations] h0.merge        single_large det=0.05 fired=['h0.merge']
+[locations] h0.merge        dense_small  det=1.00 fired=['h0.merge']
+done in 178.3s

@@ -1,0 +1,29 @@
+[honest] step    0 loss 4.2246 verify ok=True
+[honest] step   25 loss 2.9812 verify ok=True
+[honest] step   50 loss 2.7477 verify ok=True
+[honest] step   75 loss 2.6979 verify ok=True
+[honest] step  100 loss 2.6071 verify ok=True
+[honest] step  125 loss 2.5362 verify ok=True
+[honest] step  150 loss 2.5813 verify ok=True
+[honest] step  175 loss 2.5216 verify ok=True
+[honest] step  200 loss 2.5346 verify ok=True
+[honest] step  225 loss 2.5000 verify ok=True
+[honest] step  250 loss 2.4280 verify ok=True
+[honest] step  275 loss 2.5199 verify ok=True
+[honest] step  299 loss 2.4287 verify ok=True
+[batched modp] p=31: combined FA=0.0932 (bound 3/p=0.0968), separate FA=0.0349 (bound 1/p=0.0323)
+[batched modp] p=127: combined FA=0.0234 (bound 3/p=0.0236), separate FA=0.0084 (bound 1/p=0.0079)
+Traceback (most recent call last):
+  File "/home/user/verified-nanogpt/experiments/phase2_step.py", line 251, in <module>
+    fns[w]()
+    ~~~~~~^^
+  File "/home/user/verified-nanogpt/experiments/phase2_step.py", line 102, in exp_batched_modp
+    t = time.perf_counter(); ok_h = modp_combined_check(ig, rng, q=61); t_c = time.perf_counter() - t
+                                    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/user/verified-nanogpt/experiments/../freivalds/stepverify.py", line 102, in modp_combined_check
+    d = (matvec_mod(C, r, q) - matvec_mod(A, matvec_mod(B, r, q), q)) % p
+         ~~~~~~~~~~^^^^^^^^^
+  File "/home/user/verified-nanogpt/experiments/../freivalds/core.py", line 118, in matvec_mod
+    Vcat = np.concatenate([vl.reshape(n, t) for vl in vlimbs], axis=1).astype(np.float64)
+                           ~~~~~~~~~~^^^^^^
+ValueError: cannot reshape array of size 32 into shape (64,1)

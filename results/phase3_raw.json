@@ -1,0 +1,325 @@
+{
+ "honest": [
+  {
+   "d": 128,
+   "rate": 0.01,
+   "ok": true,
+   "t_step": 0.04215401200008273,
+   "t_commit": 0.3988810480000211,
+   "t_respond": 0.05656578899993292,
+   "t_verify": 0.120440348999864,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.03739110499986964,
+   "t_verify_ops": 0.07914679999998953,
+   "opened_rows": 5085,
+   "total_rows": 214345,
+   "opened_bytes": 2646520,
+   "total_bytes": 92237312,
+   "frac_bytes_seen": 0.028692510033249886,
+   "sketch_bytes": 2528312,
+   "opened_row_bytes": 2646520,
+   "path_bytes": 1783680,
+   "total": 6999192
+  },
+  {
+   "d": 128,
+   "rate": 0.05,
+   "ok": true,
+   "t_step": 0.04215401200008273,
+   "t_commit": 0.415146876000108,
+   "t_respond": 0.1460348430000522,
+   "t_verify": 0.5238575339999443,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.16105344800007515,
+   "t_verify_ops": 0.34992932199997995,
+   "opened_rows": 23170,
+   "total_rows": 214345,
+   "opened_bytes": 11368552,
+   "total_bytes": 92237312,
+   "frac_bytes_seen": 0.12325328821377622,
+   "sketch_bytes": 2528312,
+   "opened_row_bytes": 11368552,
+   "path_bytes": 8187744,
+   "total": 22269968
+  },
+  {
+   "d": 128,
+   "rate": 0.2,
+   "ok": true,
+   "t_step": 0.04215401200008273,
+   "t_commit": 0.3947856520001096,
+   "t_respond": 0.47722822000014276,
+   "t_verify": 1.937758729000052,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.5988187909999851,
+   "t_verify_ops": 1.2998622820000492,
+   "opened_rows": 75782,
+   "total_rows": 214345,
+   "opened_bytes": 35172800,
+   "total_bytes": 92237312,
+   "frac_bytes_seen": 0.3813294125483622,
+   "sketch_bytes": 2528312,
+   "opened_row_bytes": 35172800,
+   "path_bytes": 26885984,
+   "total": 65193352
+  },
+  {
+   "d": 256,
+   "rate": 0.01,
+   "ok": true,
+   "t_step": 0.06779465699992215,
+   "t_commit": 0.5654100770000241,
+   "t_respond": 0.11740768300001037,
+   "t_verify": 0.15184454700010974,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.04563906700013831,
+   "t_verify_ops": 0.10165367600006903,
+   "opened_rows": 5748,
+   "total_rows": 248393,
+   "opened_bytes": 5220252,
+   "total_bytes": 192056320,
+   "frac_bytes_seen": 0.02718083945376023,
+   "sketch_bytes": 2871352,
+   "opened_row_bytes": 5220252,
+   "path_bytes": 2038560,
+   "total": 10176148
+  },
+  {
+   "d": 256,
+   "rate": 0.05,
+   "ok": true,
+   "t_step": 0.06779465699992215,
+   "t_commit": 0.5727684190001128,
+   "t_respond": 0.21578716699991674,
+   "t_verify": 0.649366450999878,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.19629739400011204,
+   "t_verify_ops": 0.4372538000000077,
+   "opened_rows": 26469,
+   "total_rows": 248393,
+   "opened_bytes": 22889548,
+   "total_bytes": 192056320,
+   "frac_bytes_seen": 0.119181435945456,
+   "sketch_bytes": 2871352,
+   "opened_row_bytes": 22889548,
+   "path_bytes": 9429600,
+   "total": 35402252
+  },
+  {
+   "d": 256,
+   "rate": 0.2,
+   "ok": true,
+   "t_step": 0.06779465699992215,
+   "t_commit": 0.6177116100000148,
+   "t_respond": 0.6128621049999765,
+   "t_verify": 2.7497804209999686,
+   "n_tensors": 187,
+   "commitment_bytes": 32,
+   "tensor_roots_bytes": 6732,
+   "t_verify_gemm": 0.8032185240001581,
+   "t_verify_ops": 1.891419107000047,
+   "opened_rows": 87078,
+   "total_rows": 248393,
+   "opened_bytes": 71395016,
+   "total_bytes": 192056320,
+   "frac_bytes_seen": 0.37173999793393936,
+   "sketch_bytes": 2871352,
+   "opened_row_bytes": 71395016,
+   "path_bytes": 31107072,
+   "total": 106070064
+  }
+ ],
+ "attacks": {
+  "post_commit_caught_of_5": 5,
+  "choose_after_r": [
+   {
+    "gemm": "h0.fc1",
+    "fiat_shamir": true,
+    "perturb_max": 1.0029051303863525,
+    "gemm_check_failed": true,
+    "step_rejected": true,
+    "failing": [
+     "h0.fc1"
+    ]
+   },
+   {
+    "gemm": "h0.fc1",
+    "fiat_shamir": false,
+    "perturb_max": 1.0029051303863525,
+    "gemm_check_failed": false,
+    "step_rejected": false,
+    "failing": []
+   },
+   {
+    "gemm": "h1.qkv.dX",
+    "fiat_shamir": true,
+    "perturb_max": 5.7115190429612994e-05,
+    "gemm_check_failed": true,
+    "step_rejected": true,
+    "failing": [
+     "h1.qkv.dX"
+    ]
+   },
+   {
+    "gemm": "h1.qkv.dX",
+    "fiat_shamir": false,
+    "perturb_max": 5.7115190429612994e-05,
+    "gemm_check_failed": false,
+    "step_rejected": false,
+    "failing": []
+   },
+   {
+    "gemm": "h1.fc2.dW",
+    "fiat_shamir": true,
+    "perturb_max": 0.02812851592898369,
+    "gemm_check_failed": true,
+    "step_rejected": true,
+    "failing": [
+     "h1.fc2.dW"
+    ]
+   },
+   {
+    "gemm": "h1.fc2.dW",
+    "fiat_shamir": false,
+    "perturb_max": 0.02812851592898369,
+    "gemm_check_failed": false,
+    "step_rejected": false,
+    "failing": []
+   }
+  ],
+  "lying_sketch": [
+   {
+    "row_rate": 0.01,
+    "detection": 0.013,
+    "transcripts": 2000,
+    "full_runs_detected": 0,
+    "full_runs": 3
+   },
+   {
+    "row_rate": 0.05,
+    "detection": 0.0505,
+    "transcripts": 2000,
+    "full_runs_detected": 0,
+    "full_runs": 3
+   },
+   {
+    "row_rate": 0.2,
+    "detection": 0.1895,
+    "transcripts": 2000,
+    "full_runs_detected": 0,
+    "full_runs": 3
+   }
+  ],
+  "grinding": [
+   {
+    "row_rate": 0.05,
+    "lied_rows": 1,
+    "mean_attempts": 1.0666666666666667,
+    "max_attempts": 2,
+    "capped": 0,
+    "theory": 1.0526315789473684
+   },
+   {
+    "row_rate": 0.05,
+    "lied_rows": 10,
+    "mean_attempts": 1.8,
+    "max_attempts": 7,
+    "capped": 0,
+    "theory": 1.6701825701150939
+   },
+   {
+    "row_rate": 0.05,
+    "lied_rows": 100,
+    "mean_attempts": 220.93333333333334,
+    "max_attempts": 885,
+    "capped": 0,
+    "theory": 168.90381970677726
+   },
+   {
+    "row_rate": 0.2,
+    "lied_rows": 1,
+    "mean_attempts": 1.2666666666666666,
+    "max_attempts": 3,
+    "capped": 0,
+    "theory": 1.25
+   },
+   {
+    "row_rate": 0.2,
+    "lied_rows": 10,
+    "mean_attempts": 7.566666666666666,
+    "max_attempts": 42,
+    "capped": 0,
+    "theory": 9.31322574615478
+   },
+   {
+    "row_rate": 0.2,
+    "lied_rows": 100,
+    "mean_attempts": 20000.0,
+    "max_attempts": 20000,
+    "capped": 30,
+    "theory": 4909093465.297699
+   }
+  ]
+ },
+ "int_protocol": [
+  {
+   "n": 256,
+   "row_rate": 0.01,
+   "honest_ok": true,
+   "t_prove": 0.003677530000004481,
+   "t_verify": 0.004884381000010762,
+   "sketch_bytes": 6144,
+   "opening_bytes": 14592,
+   "data_bytes": 1048576,
+   "wrong_C_honest_sketch_caught": true,
+   "lying_detected_of_40": 0
+  },
+  {
+   "n": 256,
+   "row_rate": 0.1,
+   "honest_ok": true,
+   "t_prove": 0.0030030200000510376,
+   "t_verify": 0.003641477999963172,
+   "sketch_bytes": 6144,
+   "opening_bytes": 122624,
+   "data_bytes": 1048576,
+   "wrong_C_honest_sketch_caught": true,
+   "lying_detected_of_40": 4
+  },
+  {
+   "n": 1024,
+   "row_rate": 0.01,
+   "honest_ok": true,
+   "t_prove": 0.0628559500000847,
+   "t_verify": 0.002391499999930602,
+   "sketch_bytes": 24576,
+   "opening_bytes": 190784,
+   "data_bytes": 16777216,
+   "wrong_C_honest_sketch_caught": true,
+   "lying_detected_of_40": 0
+  },
+  {
+   "n": 1024,
+   "row_rate": 0.1,
+   "honest_ok": true,
+   "t_prove": 0.10616487100014638,
+   "t_verify": 0.03910617299993646,
+   "sketch_bytes": 24576,
+   "opening_bytes": 1695296,
+   "data_bytes": 16777216,
+   "wrong_C_honest_sketch_caught": true,
+   "lying_detected_of_40": 2
+  }
+ ],
+ "wall_seconds": 138.85752058029175
+}

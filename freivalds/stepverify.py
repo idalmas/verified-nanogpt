@@ -15,7 +15,7 @@ import time
 import numpy as np
 import torch
 
-from freivalds.core import U_FP32, U_FP64, gamma, matvec_mod, rand_field
+from freivalds.core import U_BF16, U_FP32, U_FP64, gamma, matvec_mod, rand_field
 from freivalds.tinygpt import OP_FLOPS_PER_ELEM
 
 
@@ -23,31 +23,70 @@ from freivalds.tinygpt import OP_FLOPS_PER_ELEM
 # float Freivalds on (batched) torch GEMM records
 # ------------------------------------------------------------------------------------------
 
-def _gemm_residual_and_tau(g, r, u=U_FP32):
-    """Return residual = C r − A(B r) and worst-case τ (both float64, shape (..., m, t))."""
-    A, B, C = g.A.double(), g.B.double(), g.C.double()
+def tol_coef(n, mode="worst", u=U_FP32, kappa=None, lam=6.0):
+    """
+    Coefficient κ with τ_i = κ · (|A||B||r|)_i for the verifier's tolerance setting:
+      worst   — γ_n(u): rigorous for fp32 accumulation and fp32 output.
+      bf16out — γ_n(u) + u_bf16 (1 + γ_n): rigorous if the recipe rounds C to bf16.
+      prob    — λ √n u (Higham–Mary probabilistic bound; not a guarantee).
+      emp     — kappa, calibrated from honest residuals (not a guarantee).
+    """
+    if mode == "worst":
+        return gamma(n, u)
+    if mode == "bf16out":
+        g = gamma(n, u)
+        return g + U_BF16 * (1 + g)
+    if mode == "prob":
+        return lam * math.sqrt(n) * u
+    if mode == "emp":
+        return kappa
+    raise ValueError(mode)
+
+
+def _gemm_residual_and_tau(g, r, u=U_FP32, vprec="fp64", mode="worst", kappa=None):
+    """
+    Return residual = C r − A(B r) and a rigorous τ with |residual| ≤ τ for an honest
+    C = fl(A B) computed with unit roundoff u (shape (..., m, t)).
+
+    vprec='fp64': verifier computes in float64; τ = γ_n(u)·|A||B||r| + float64 slack.
+    vprec='fp32': verifier computes in float32 (half the memory traffic). τ then also bounds
+        the verifier's own rounding: fl(Br) (γ_k), fl(A·w) (γ_n), fl(Cr) (γ_k) and the final
+        subtraction (u), using |C| ≤ (1+γ_n)|A||B| for the honest C; M = |A|(|B||r|) is itself
+        computed in fp32 and inflated by (1 + 2γ_{n+k}) to stay an upper bound.
+    """
+    n, k = g.A.shape[-1], g.B.shape[-1]
+    if vprec == "fp64":
+        A, B, C = g.A.double(), g.B.double(), g.C.double()
+        r = r.double()
+        resid = C @ r - A @ (B @ r)
+        M = A.abs() @ (B.abs() @ r.abs())
+        gt = tol_coef(n, mode, u, kappa)
+        g64 = gamma(n + k + 2, U_FP64)
+        tau = (gt + g64 * (2 + gt) * 2) * M * (1 + 1e-6) + 1e-300
+        return resid, tau
+    A, B, C = g.A.float(), g.B.float(), g.C.float()
+    r = r.float()
     resid = C @ r - A @ (B @ r)
-    n, k = A.shape[-1], B.shape[-1]
     M = A.abs() @ (B.abs() @ r.abs())
-    gt = gamma(n, u)
-    g64 = gamma(n + k + 2, U_FP64)
-    tau = (gt + g64 * (2 + gt) * 2) * M * (1 + 1e-6) + 1e-300
-    return resid, tau
+    gn, gk = gamma(n, u), gamma(k, u)
+    coef = gn + gk * (1 + gn) + gn * (1 + gk) + gk + u * (3 + 2 * gn)
+    tau = coef * M * (1 + 2 * gamma(n + k, u)) * 1.01 + 1e-30
+    return resid.double(), tau.double()
 
 
 def _rademacher(shape, gen):
     return (torch.randint(0, 2, shape, generator=gen, dtype=torch.float64) * 2 - 1)
 
 
-def check_gemm(g, gen, k=1, u=U_FP32):
+def check_gemm(g, gen, k=1, u=U_FP32, vprec="fp64", mode="worst", kappa=None):
     r = _rademacher(g.B.shape[:-1][:-1] + (g.B.shape[-1], k), gen)
-    resid, tau = _gemm_residual_and_tau(g, r, u)
+    resid, tau = _gemm_residual_and_tau(g, r, u, vprec, mode, kappa)
     return bool((resid.abs() <= tau).all())
 
 
-def check_gemms_separate(gemms, gen, k=1):
+def check_gemms_separate(gemms, gen, k=1, vprec="fp64", mode="worst", kappa=None):
     """Returns list of names of failing GEMMs."""
-    return [g.name for g in gemms if not check_gemm(g, gen, k)]
+    return [g.name for g in gemms if not check_gemm(g, gen, k, vprec=vprec, mode=mode, kappa=kappa)]
 
 
 def check_gemms_combined(gemms, gen):
@@ -107,6 +146,48 @@ def _close(a, b, rtol=1e-5, atol_rel=1e-6):
     return bool(((a - b).abs() <= rtol * b.abs() + atol_rel * scale).all())
 
 
+_LAYOUT_MAPS = {}
+
+
+def _layout_map(o):
+    """
+    Index map of a layout op: out.flatten()[i] == concat(inputs.flatten())[map[i]].
+    Depends only on the op and the shapes, so the verifier builds it once per architecture
+    (cached) by running the layout function on index tensors.
+    """
+    names = [k for k, v in o.inputs.items() if torch.is_tensor(v)]
+    key = (o.name, tuple(tuple(o.inputs[k].shape) for k in names), tuple(o.outputs[0].shape))
+    if key not in _LAYOUT_MAPS:
+        off, idx_inputs = 0, {}
+        for k in names:
+            n = o.inputs[k].numel()
+            idx_inputs[k] = torch.arange(off, off + n, dtype=torch.float64).view(o.inputs[k].shape)
+            off += n
+        m = o.fn(**idx_inputs)
+        _LAYOUT_MAPS[key] = (names, m.reshape(-1).long(),
+                             torch.tensor([0] + [o.inputs[k].numel() for k in names]).cumsum(0))
+    return _LAYOUT_MAPS[key]
+
+
+def _check_layout(o, rho, gen):
+    if rho <= 0:
+        return True
+    names, m, offs = _layout_map(o)
+    out = o.outputs[0].reshape(-1)
+    if rho >= 1.0:
+        idx = torch.arange(out.numel())
+    else:
+        idx = torch.randint(out.numel(), (max(1, math.ceil(rho * out.numel())),), generator=gen)
+    src = m[idx]
+    which = torch.searchsorted(offs, src, right=True) - 1
+    vals = torch.empty(idx.numel(), dtype=out.dtype)
+    for j, k in enumerate(names):
+        sel = which == j
+        if sel.any():
+            vals[sel] = o.inputs[k].reshape(-1)[src[sel] - offs[j]]
+    return bool(torch.equal(vals, out[idx]))
+
+
 def check_op(o, rho, gen, stats=None):
     """
     Recompute a random fraction rho of op o's outputs. Returns True if consistent.
@@ -116,15 +197,13 @@ def check_op(o, rho, gen, stats=None):
     out0 = o.outputs[0]
     fl = OP_FLOPS_PER_ELEM[o.fn_name]
     if o.kind == "layout":
-        new = o.fn(**o.inputs)
-        new = new if isinstance(new, tuple) else (new,)
-        return all(torch.equal(a, b) for a, b in zip(new, o.outputs))
+        return _check_layout(o, rho, gen)
     if o.kind == "elem":
         N = out0.numel()
         cnt = max(1, math.ceil(rho * N)) if rho > 0 else 0
         if cnt == 0:
             return True
-        idx = torch.randperm(N, generator=gen)[:cnt]
+        idx = torch.randint(N, (cnt,), generator=gen)   # with replacement
         sub = {k: (v.reshape(-1)[idx] if torch.is_tensor(v) and v.numel() == N else v)
                for k, v in o.inputs.items()}
         new = o.fn(**sub)
@@ -138,7 +217,7 @@ def check_op(o, rho, gen, stats=None):
         cnt = max(1, math.ceil(rho * rows)) if rho > 0 else 0
         if cnt == 0:
             return True
-        idx = torch.randperm(rows, generator=gen)[:cnt]
+        idx = torch.randint(rows, (cnt,), generator=gen)
         sub = {k: (v.reshape(rows, L)[idx] if torch.is_tensor(v) and v.numel() == rows * L else v)
                for k, v in o.inputs.items()}
         new = o.fn(**sub)
@@ -180,9 +259,11 @@ def verifier_flops(tr, rho, k=1, combined=False):
     return gem, ops
 
 
-def verify_step(tr, rho=0.01, k=1, combined=False, seed=0):
+def verify_step(tr, rho=0.01, k=1, combined=False, seed=0, vprec="fp64", mode="worst", kappa=None):
     """
     Returns dict: ok, failing (list of record names), timings, sampling stats.
+    Float GEMMs use tolerance `mode` (see tol_coef); int GEMMs (tr.int_gemms) are checked
+    exactly over F_p, p = 2^61 − 1.
     """
     gen = torch.Generator().manual_seed(seed)
     t0 = time.perf_counter()
@@ -190,7 +271,11 @@ def verify_step(tr, rho=0.01, k=1, combined=False, seed=0):
         ok_g, _, _ = check_gemms_combined(tr.gemms, gen)
         bad_g = [] if ok_g else ["<combined GEMM check>"]
     else:
-        bad_g = check_gemms_separate(tr.gemms, gen, k)
+        bad_g = check_gemms_separate(tr.gemms, gen, k, vprec, mode, kappa)
+    if tr.int_gemms:
+        rng = np.random.default_rng(int(torch.randint(2**62, (1,), generator=gen)))
+        ig = [(g.A.numpy(), g.B.numpy(), g.C.numpy()) for g in tr.int_gemms]
+        bad_g += [tr.int_gemms[i].name for i in modp_separate_check(ig, rng)]
     t1 = time.perf_counter()
     stats = {}
     bad_o = [o.name for o in tr.ops if not check_op(o, rho, gen, stats)]

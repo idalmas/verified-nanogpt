@@ -1,0 +1,27 @@
+[honest] d=128 rate=0.01: ok=True data=92.2MB proof=7.00MB (sketch 2.53, rows 2.65, paths 1.78) seen=2.9% | step 42ms commit 399ms respond 57ms verify 120ms
+[honest] d=128 rate=0.05: ok=True data=92.2MB proof=22.27MB (sketch 2.53, rows 11.37, paths 8.19) seen=12.3% | step 42ms commit 415ms respond 146ms verify 524ms
+[honest] d=128 rate=0.2: ok=True data=92.2MB proof=65.19MB (sketch 2.53, rows 35.17, paths 26.89) seen=38.1% | step 42ms commit 395ms respond 477ms verify 1938ms
+[honest] d=256 rate=0.01: ok=True data=192.1MB proof=10.18MB (sketch 2.87, rows 5.22, paths 2.04) seen=2.7% | step 68ms commit 565ms respond 117ms verify 152ms
+[honest] d=256 rate=0.05: ok=True data=192.1MB proof=35.40MB (sketch 2.87, rows 22.89, paths 9.43) seen=11.9% | step 68ms commit 573ms respond 216ms verify 649ms
+[honest] d=256 rate=0.2: ok=True data=192.1MB proof=106.07MB (sketch 2.87, rows 71.40, paths 31.11) seen=37.2% | step 68ms commit 618ms respond 613ms verify 2750ms
+[attack] post-commit tamper caught 5/5
+[attack] choose-after-r h0.fc1     FS=True: perturbation max 1 -> Freivalds check failed=True, step rejected=True ['h0.fc1']
+[attack] choose-after-r h0.fc1     FS=False: perturbation max 1 -> Freivalds check failed=False, step rejected=False []
+[attack] choose-after-r h1.qkv.dX  FS=True: perturbation max 5.71e-05 -> Freivalds check failed=True, step rejected=True ['h1.qkv.dX']
+[attack] choose-after-r h1.qkv.dX  FS=False: perturbation max 5.71e-05 -> Freivalds check failed=False, step rejected=False []
+[attack] choose-after-r h1.fc2.dW  FS=True: perturbation max 0.0281 -> Freivalds check failed=True, step rejected=True ['h1.fc2.dW']
+[attack] choose-after-r h1.fc2.dW  FS=False: perturbation max 0.0281 -> Freivalds check failed=False, step rejected=False []
+[attack] lying sketch, one wrong row, row_rate=0.01: detection 0.013 (full prove/verify detected 0/3)
+[attack] lying sketch, one wrong row, row_rate=0.05: detection 0.051 (full prove/verify detected 0/3)
+[attack] lying sketch, one wrong row, row_rate=0.2: detection 0.190 (full prove/verify detected 0/3)
+[attack] grinding rate=0.05 lied rows=1: mean attempts 1.1 (theory ≈ 1.1), capped 0/30
+[attack] grinding rate=0.05 lied rows=10: mean attempts 1.8 (theory ≈ 1.7), capped 0/30
+[attack] grinding rate=0.05 lied rows=100: mean attempts 220.9 (theory ≈ 168.9), capped 0/30
+[attack] grinding rate=0.2 lied rows=1: mean attempts 1.3 (theory ≈ 1.2), capped 0/30
+[attack] grinding rate=0.2 lied rows=10: mean attempts 7.6 (theory ≈ 9.3), capped 0/30
+[attack] grinding rate=0.2 lied rows=100: mean attempts 20000.0 (theory ≈ 4909093465.3), capped 30/30
+[int] n=256 rate=0.01: ok=True prove 0.004s verify 0.005s proof 0.02MB of data 1.0MB; wrong C w/ honest sketch caught=True; lying caught 0/40
+[int] n=256 rate=0.1: ok=True prove 0.003s verify 0.004s proof 0.13MB of data 1.0MB; wrong C w/ honest sketch caught=True; lying caught 4/40
+[int] n=1024 rate=0.01: ok=True prove 0.063s verify 0.002s proof 0.22MB of data 16.8MB; wrong C w/ honest sketch caught=True; lying caught 0/40
+[int] n=1024 rate=0.1: ok=True prove 0.106s verify 0.039s proof 1.72MB of data 16.8MB; wrong C w/ honest sketch caught=True; lying caught 2/40
+done in 138.9s
