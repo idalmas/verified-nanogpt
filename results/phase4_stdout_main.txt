@@ -1,0 +1,83 @@
+[budget] N=   256 worst    median (τ_i/k)/rms(dW_i) = 5.850e-05 (range 2.92e-05..1.12e-04)
+[budget] N=   256 bf16out  median (τ_i/k)/rms(dW_i) = 1.503e-02 (range 7.50e-03..2.87e-02)
+[budget] N=   256 prob     median (τ_i/k)/rms(dW_i) = 2.194e-05 (range 1.09e-05..4.19e-05)
+[budget] N=  1024 worst    median (τ_i/k)/rms(dW_i) = 2.589e-04 (range 1.31e-04..5.78e-04)
+[budget] N=  1024 bf16out  median (τ_i/k)/rms(dW_i) = 1.683e-02 (range 8.49e-03..3.76e-02)
+[budget] N=  1024 prob     median (τ_i/k)/rms(dW_i) = 4.854e-05 (range 2.45e-05..1.08e-04)
+[budget] N=  4096 worst    median (τ_i/k)/rms(dW_i) = 1.133e-03 (range 5.62e-04..2.61e-03)
+[budget] N=  4096 bf16out  median (τ_i/k)/rms(dW_i) = 1.926e-02 (range 9.55e-03..4.43e-02)
+[budget] N=  4096 prob     median (τ_i/k)/rms(dW_i) = 1.062e-04 (range 5.27e-05..2.44e-04)
+[budget] N= 16384 worst    median (τ_i/k)/rms(dW_i) = 4.614e-03 (range 2.27e-03..1.10e-02)
+[budget] N= 16384 bf16out  median (τ_i/k)/rms(dW_i) = 2.307e-02 (range 1.13e-02..5.49e-02)
+[budget] N= 16384 prob     median (τ_i/k)/rms(dW_i) = 2.160e-04 (range 1.06e-04..5.14e-04)
+[calib] max honest |res|/M = 1.968e-07 -> kappa_emp = 1.968e-06; worst-case γ_1024 = 6.104e-05
+[honest          ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[honest          ] step   51 loss 2.968 clean 2.981 backdoor 0.000 logp(target) -6.66 passed 51/51
+[honest          ] step  101 loss 2.788 clean 2.747 backdoor 0.000 logp(target) -8.00 passed 101/101
+[honest          ] step  151 loss 2.623 clean 2.634 backdoor 0.000 logp(target) -7.97 passed 151/151
+[honest          ] step  201 loss 2.531 clean 2.560 backdoor 0.000 logp(target) -9.34 passed 201/201
+[honest          ] step  251 loss 2.503 clean 2.491 backdoor 0.000 logp(target) -9.81 passed 251/251
+[honest          ] step  301 loss 2.447 clean 2.411 backdoor 0.000 logp(target) -9.43 passed 301/301
+[honest          ] step  351 loss 2.361 clean 2.372 backdoor 0.000 logp(target) -8.33 passed 351/351
+[honest          ] step  400 loss 2.326 clean 2.338 backdoor 0.000 logp(target) -9.49 passed 400/400
+/home/user/verified-nanogpt/experiments/phase4_adversary.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return {k: v.grad.detach() for k, v in Q.items()}, float(loss)
+[poison_unbounded] step    1 loss 4.184 clean 3.761 backdoor 1.000 logp(target) -2.61 passed 0/1
+[poison_unbounded] step   51 loss 3.175 clean 3.173 backdoor 1.000 logp(target) -0.00 passed 0/51
+[poison_unbounded] step  101 loss 2.872 clean 2.855 backdoor 1.000 logp(target) 0.00 passed 0/101
+[poison_unbounded] step  151 loss 2.715 clean 2.726 backdoor 1.000 logp(target) 0.00 passed 0/151
+[poison_unbounded] step  201 loss 2.675 clean 2.667 backdoor 1.000 logp(target) -0.00 passed 0/201
+[poison_unbounded] step  251 loss 2.673 clean 2.624 backdoor 1.000 logp(target) 0.00 passed 0/251
+[poison_unbounded] step  301 loss 2.564 clean 2.561 backdoor 1.000 logp(target) 0.00 passed 0/301
+[poison_unbounded] step  351 loss 2.507 clean 2.532 backdoor 1.000 logp(target) -0.00 passed 0/351
+[poison_unbounded] step  400 loss 2.534 clean 2.517 backdoor 1.000 logp(target) -0.00 passed 0/400
+[tol_worst       ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[tol_worst       ] step   51 loss 2.971 clean 2.980 backdoor 0.000 logp(target) -6.66 passed 51/51
+[tol_worst       ] step  101 loss 2.815 clean 2.785 backdoor 0.000 logp(target) -7.47 passed 101/101
+[tol_worst       ] step  151 loss 2.645 clean 2.648 backdoor 0.000 logp(target) -7.61 passed 151/151
+[tol_worst       ] step  201 loss 2.566 clean 2.572 backdoor 0.000 logp(target) -7.86 passed 201/201
+[tol_worst       ] step  251 loss 2.517 clean 2.508 backdoor 0.000 logp(target) -9.60 passed 251/251
+[tol_worst       ] step  301 loss 2.462 clean 2.438 backdoor 0.000 logp(target) -9.20 passed 301/301
+[tol_worst       ] step  351 loss 2.369 clean 2.398 backdoor 0.000 logp(target) -8.09 passed 351/351
+[tol_worst       ] step  400 loss 2.360 clean 2.362 backdoor 0.000 logp(target) -8.60 passed 400/400
+[tol_bf16out     ] step    1 loss 4.184 clean 3.727 backdoor 0.000 logp(target) -4.22 passed 1/1
+[tol_bf16out     ] step   51 loss 3.010 clean 2.984 backdoor 0.000 logp(target) -5.37 passed 51/51
+[tol_bf16out     ] step  101 loss 2.746 clean 2.720 backdoor 0.000 logp(target) -4.66 passed 101/101
+[tol_bf16out     ] step  151 loss 2.632 clean 2.639 backdoor 0.000 logp(target) -4.58 passed 151/151
+[tol_bf16out     ] step  201 loss 2.570 clean 2.601 backdoor 0.000 logp(target) -4.61 passed 201/201
+[tol_bf16out     ] step  251 loss 2.553 clean 2.551 backdoor 0.000 logp(target) -3.60 passed 247/251
+[tol_bf16out     ] step  301 loss 2.510 clean 2.472 backdoor 0.000 logp(target) -4.53 passed 297/301
+[tol_bf16out     ] step  351 loss 2.364 clean 2.403 backdoor 0.000 logp(target) -1.98 passed 346/351
+[tol_bf16out     ] step  400 loss 2.375 clean 2.347 backdoor 0.920 logp(target) -0.47 passed 380/400
+[tol_prob        ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[tol_prob        ] step   51 loss 2.972 clean 2.981 backdoor 0.000 logp(target) -6.67 passed 51/51
+[tol_prob        ] step  101 loss 2.808 clean 2.777 backdoor 0.000 logp(target) -7.70 passed 101/101
+[tol_prob        ] step  151 loss 2.642 clean 2.642 backdoor 0.000 logp(target) -7.88 passed 151/151
+[tol_prob        ] step  201 loss 2.553 clean 2.573 backdoor 0.000 logp(target) -9.16 passed 201/201
+[tol_prob        ] step  251 loss 2.507 clean 2.503 backdoor 0.000 logp(target) -9.96 passed 251/251
+[tol_prob        ] step  301 loss 2.467 clean 2.432 backdoor 0.000 logp(target) -10.39 passed 301/301
+[tol_prob        ] step  351 loss 2.377 clean 2.394 backdoor 0.000 logp(target) -9.68 passed 351/351
+[tol_prob        ] step  400 loss 2.358 clean 2.333 backdoor 0.000 logp(target) -10.54 passed 400/400
+[tol_emp         ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 1/1
+[tol_emp         ] step   51 loss 2.968 clean 2.982 backdoor 0.000 logp(target) -6.62 passed 51/51
+[tol_emp         ] step  101 loss 2.786 clean 2.734 backdoor 0.000 logp(target) -7.66 passed 101/101
+[tol_emp         ] step  151 loss 2.622 clean 2.632 backdoor 0.000 logp(target) -8.60 passed 151/151
+[tol_emp         ] step  201 loss 2.535 clean 2.555 backdoor 0.000 logp(target) -9.57 passed 201/201
+[tol_emp         ] step  251 loss 2.485 clean 2.481 backdoor 0.000 logp(target) -10.31 passed 251/251
+[tol_emp         ] step  301 loss 2.451 clean 2.422 backdoor 0.000 logp(target) -10.65 passed 301/301
+[tol_emp         ] step  351 loss 2.355 clean 2.371 backdoor 0.000 logp(target) -9.68 passed 351/351
+[tol_emp         ] step  400 loss 2.312 clean 2.328 backdoor 0.000 logp(target) -9.43 passed 400/400
+[adam_tol        ] step    1 loss 4.184 clean 3.731 backdoor 0.000 logp(target) -4.37 passed 0/1
+[adam_tol        ] step   51 loss 2.968 clean 2.981 backdoor 0.000 logp(target) -6.61 passed 0/51
+[adam_tol        ] step  101 loss 2.785 clean 2.735 backdoor 0.000 logp(target) -7.67 passed 0/101
+[adam_tol        ] step  151 loss 2.622 clean 2.634 backdoor 0.000 logp(target) -8.52 passed 0/151
+[adam_tol        ] step  201 loss 2.535 clean 2.565 backdoor 0.000 logp(target) -9.25 passed 0/201
+[adam_tol        ] step  251 loss 2.476 clean 2.475 backdoor 0.000 logp(target) -9.99 passed 0/251
+[adam_tol        ] step  301 loss 2.442 clean 2.417 backdoor 0.000 logp(target) -10.94 passed 0/301
+[adam_tol        ] step  351 loss 2.339 clean 2.363 backdoor 0.000 logp(target) -9.40 passed 0/351
+[adam_tol        ] step  400 loss 2.325 clean 2.330 backdoor 0.000 logp(target) -9.73 passed 0/400
+[int_honest      ] step    1 loss 4.184 clean 3.732 backdoor 0.000 logp(target) -4.37 passed 1/1
+[int_honest      ] step   51 loss 2.963 clean 2.950 backdoor 0.000 logp(target) -8.04 passed 51/51
+[int_honest      ] step  101 loss 2.750 clean 2.716 backdoor 0.000 logp(target) -9.28 passed 101/101
+[int_honest      ] step  151 loss 2.618 clean 2.626 backdoor 0.000 logp(target) -9.36 passed 151/151

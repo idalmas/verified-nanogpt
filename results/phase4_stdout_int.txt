@@ -1,0 +1,1 @@
+[int_honest      ] step    1 loss 4.184 clean 3.732 backdoor 0.000 logp(target) -4.37 passed 1/1
