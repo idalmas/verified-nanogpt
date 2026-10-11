@@ -26,3 +26,6 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 [bf16out s=4] step  101 clean 2.669 backdoor 0.000 logp -7.65 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
 [bf16out s=4] step  151 clean 2.594 backdoor 0.000 logp -7.99 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
 [bf16out s=4] step  201 clean 2.531 backdoor 0.000 logp -7.15 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step  251 clean 2.449 backdoor 0.000 logp -7.68 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step  301 clean 2.396 backdoor 0.000 logp -8.05 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
+[bf16out s=4] step  351 clean 2.347 backdoor 0.000 logp -8.04 | per-step detection: Freivalds 0.000 replay 1.000 any 1.000
