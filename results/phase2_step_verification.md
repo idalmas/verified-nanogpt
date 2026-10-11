@@ -92,3 +92,45 @@ honestly, so downstream checks pass). Two clean failure modes: (1) single-coordi
 of non-linear ops is caught only ≈ rho of the time; (2) a **0.1% dense rescaling of a weight
 gradient (h1.fc2.dW) passes Freivalds 95% of the time** because it is within the rigorous
 tolerance — this is the channel Phase 4 exploits.
+
+## Cost: sketch-verify vs replay (`results/phase2_cost_stdout.txt`, quiet machine, 4 threads)
+
+FLOPs: replay = 2·b·m·n·k per GEMM + an assumed per-element cost for each op (LN 8–14,
+GELU 12–20, softmax 4–5, AdamW 16, add 1; `OP_FLOPS_PER_ELEM`). Verifier = per GEMM
+2(mk + nk + mn) for Cr, Br, A(Br) plus 2(nk + mn) for the tolerance |A|(|B||r|) (the
+underflow term's extra row sums, ~mn per GEMM, are not counted) + rho × op cost. Wall: median
+of 3 verifications (after one warm-up that builds the layout index maps) vs median of 5 replays
+of the step (`training_step`, record off). Across the three cost runs made tonight
+(`phase2_cost_stdout.txt` is the last, on a quiet machine), the fp64 GEMM-check times varied
+by up to ~2× for the same configuration, so treat single wall-time ratios as ±50%.
+
+| d | batch×T | rho | verifier precision | replay FLOP | verifier FLOP | FLOP ratio | replay ms | verify ms (GEMM + ops) | wall ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| 128 | 16×64 | 0.01 | fp64 | 2.799e+09 | 7.226e+07 | 38.7× | 44.8 | 48.4 (27.4 + 20.9) | 0.92× |
+| 128 | 16×64 | 0.01 | fp32 | 2.799e+09 | 7.226e+07 | 38.7× | 44.8 | 33.1 (13.9 + 19.3) | 1.35× |
+| 128 | 16×64 | 0.1 | fp32 | 2.799e+09 | 7.790e+07 | 35.9× | 44.8 | 66.9 (14.3 + 52.6) | 0.67× |
+| 256 | 16×64 | 0.01 | fp64 | 1.043e+10 | 1.402e+08 | 74.4× | 66.0 | 103.6 (73.3 + 30.3) | 0.64× |
+| 256 | 16×64 | 0.01 | fp32 | 1.043e+10 | 1.402e+08 | 74.4× | 66.0 | 82.1 (28.5 + 53.6) | 0.80× |
+| 256 | 16×64 | 0.1 | fp32 | 1.043e+10 | 1.520e+08 | 68.6× | 66.0 | 154.4 (25.8 + 128.6) | 0.43× |
+| 512 | 16×64 | 0.01 | fp64 | 4.025e+10 | 3.107e+08 | 129.5× | 210.9 | 224.7 (179.2 + 45.5) | 0.94× |
+| 512 | 16×64 | 0.01 | fp32 | 4.025e+10 | 3.107e+08 | 129.5× | 210.9 | 87.0 (40.4 + 46.7) | 2.42× |
+| 512 | 16×64 | 0.1 | fp32 | 4.025e+10 | 3.388e+08 | 118.8× | 210.9 | 223.9 (35.2 + 188.7) | 0.94× |
+| 512 | 8×128 | 0.01 | fp64 | 4.120e+10 | 3.325e+08 | 123.9× | 172.1 | 109.7 (67.0 + 42.7) | 1.57× |
+| 512 | 8×128 | 0.01 | fp32 | 4.120e+10 | 3.325e+08 | 123.9× | 172.1 | 82.0 (40.7 + 41.3) | 2.10× |
+| 512 | 8×128 | 0.1 | fp32 | 4.120e+10 | 3.618e+08 | 113.9× | 172.1 | 247.3 (36.5 + 210.8) | 0.70× |
+
+* FLOP savings grow linearly with width: 39× (d = 128), 74× (d = 256), 130× (d = 512), because
+  each GEMM's cost/size ratio is ~min(m, n, k). The step's GEMMs are mostly 1024-row token
+  matrices, so the ratio is bounded by d, and by T for attention GEMMs.
+* Wall time on CPU barely follows: 0.6–2.4× at rho = 0.01 (best with the rigorous fp32
+  verifier at d = 512); at rho = 0.1 the verifier is *slower* than replay (0.4–0.9×).
+  Reasons: matrix–vector work is memory-bound (the verifier must read every A, B, C once),
+  float64 checks double the bytes, and the op checker does random gathers plus per-op Python
+  overhead (85 ops). The FLOP ratio is the right proxy only when the verifier's bytes moved,
+  not FLOPs, are cheap — on a GPU, a fused Freivalds kernel reading bf16 operands would run at
+  memory bandwidth; GEMM replay at tensor-core peak. The wall-time ratio there would be set by
+  the GEMM's arithmetic intensity relative to the hardware's FLOP:byte ratio — not measured
+  here (no GPU).
+* An important hidden cost: the verifier needs **all activations** of the step (A, B, C of
+  every GEMM, ~92 MB for d = 128 here) — see Phase 3 for how commitments + openings reduce
+  what must be shipped.

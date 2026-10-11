@@ -47,7 +47,7 @@ ETA_FP32 = 2.0 ** -126   # smallest normal fp32: absolute error of a product wit
                          # (FTZ/DAZ) or underflowing operand/result
 
 
-def _underflow_term(A, B, r, mult, extra_k=0):
+def _underflow_term(A, B, r, mult, extra_k=0, Babs_r=None):
     """
     Absolute term for gradual/flush-to-zero underflow, which the relative γ_n model ignores:
     each product a·b may be off by ≤ η(|a| + |b| + 1) (a subnormal operand flushed to zero,
@@ -59,8 +59,8 @@ def _underflow_term(A, B, r, mult, extra_k=0):
     """
     n = A.shape[-1]
     r1 = r.abs().sum(-2, keepdim=True)                         # (..., 1, t)
-    t1 = A.abs().sum(-1, keepdim=True) * r1                    # (..., m, t)
-    t2 = (B.abs() @ r.abs()).sum(-2, keepdim=True)             # (..., 1, t)
+    t1 = A.sum(-1, keepdim=True) * r1                          # (..., m, t); A is |A| here
+    t2 = (B @ r.abs() if Babs_r is None else Babs_r).sum(-2, keepdim=True)   # B is |B| here
     return mult * ETA_FP32 * (t1 + t2 + 2 * (n + extra_k) * r1) * 1.01 + 1e-300
 
 
@@ -80,20 +80,24 @@ def _gemm_residual_and_tau(g, r, u=U_FP32, vprec="fp64", mode="worst", kappa=Non
         A, B, C = g.A.double(), g.B.double(), g.C.double()
         r = r.double()
         resid = C @ r - A @ (B @ r)
-        M = A.abs() @ (B.abs() @ r.abs())
+        Aa, Ba = A.abs(), B.abs()
+        Bar = Ba @ r.abs()
+        M = Aa @ Bar
         gt = tol_coef(n, mode, u, kappa)
         g64 = gamma(n + k + 2, U_FP64)
-        tau = (gt + g64 * (2 + gt) * 2) * M * (1 + 1e-6) + _underflow_term(A, B, r, 1.0)
+        tau = (gt + g64 * (2 + gt) * 2) * M * (1 + 1e-6) + _underflow_term(Aa, Ba, r, 1.0, Babs_r=Bar)
         return resid, tau
     A, B, C = g.A.float(), g.B.float(), g.C.float()
     r = r.float()
     resid = C @ r - A @ (B @ r)
-    M = A.abs() @ (B.abs() @ r.abs())
+    Aa, Ba = A.abs(), B.abs()
+    Bar = Ba @ r.abs()
+    M = Aa @ Bar
     gn, gk = gamma(n, u), gamma(k, u)
     coef = gn + gk * (1 + gn) + gn * (1 + gk) + gk + u * (3 + 2 * gn)
     tau = coef * M * (1 + 2 * gamma(n + k, u)) * 1.01
     # underflow: prover's GEMM plus the verifier's three fp32 products (Br, A·w, C·r)
-    tau = tau.double() + _underflow_term(A.double(), B.double(), r.double(), 3.0, extra_k=k)
+    tau = tau.double() + _underflow_term(Aa, Ba, r, 3.0, extra_k=k, Babs_r=Bar).double()
     return resid.double(), tau
 
 
