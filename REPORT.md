@@ -245,3 +245,57 @@ attack (100% per-step detection).
    verifier/replay wall-time ratios.
 7. Step-sampling economics with realistic cheating strategies, the auditor's storage cost,
    and confidentiality leakage of the sketches.
+
+
+---
+
+## Part 2 (follow-up session): creative alternatives that remove the tolerance
+
+Asked to invent and test new ideas (e.g. "take the mod of things") that cost compute instead of
+changing the model, I built and tested three more. Write-ups:
+[phase7_certified.md](results/phase7_certified.md), [phase8_misc.md](results/phase8_misc.md),
+[phase9_data_order.md](results/phase9_data_order.md). Tests: 47 passing.
+
+### Phase 7 — rounding certificates (the main new result)
+Each matmul is defined as "exact product of the bf16 (block-float) inputs, rounded once to
+fp32". The lab publishes the integer rounding residual R, and the verifier checks
+A·B ≡ C + R (mod 2⁶¹−1) plus an exact range check on R.
+
+| result | value |
+|---|---|
+| exact vs rational arithmetic | 0 / 480 mismatches |
+| forged outputs ±1–3 ulp with matching forged residual | 0 / 2500 accepted (true output 500/500) |
+| adversaries vs certified weight gradients (naive / forged residual / 1-ulp forgery) | caught 40/40, 40/40, 40/40 steps |
+| float training with all 43 matmuls certified, 400 steps | held-out loss 2.417 vs 2.394 fp32; 8/8 checkpoints fully verified |
+| check cost vs fp32 matmul (fused numba) | 17.6× at n=256 → 1.65× at n=4096 (O(n²) vs O(n³)); small-r variant 1.26× at 4096 |
+| complete exact verification of a step (all certificates + all ops bitwise), d=128 | 318 ms vs 28 ms fp32 replay, 477 ms certified replay |
+
+This gives the "no room at all" property of integer training while keeping float training,
+and it doesn't depend on batch-invariant kernels. The costs: a slow prover in my prototype,
+and a check that only beats sgemm at large matmuls on CPU. Along the way, the first certified
+training run crashed on subnormal outputs. The spec now defines underflow, the same lesson as
+Phase 4.
+
+### Phase 8 — random-prime Freivalds; cross-library ops
+- A modulus chosen by Fiat–Shamir after commitment blocks the multiple-of-p attack: a
+  k·(2³¹−1) tamper was accepted 2000/2000 by the fixed modulus, 0/2000 by the random prime,
+  and 0/2000 by a grinding attacker.
+- numpy vs torch disagree bit-wise on every non-matmul op tested, even AdamW. torch's CPU sqrt
+  is not correctly rounded (6740/2²⁰ entries wrong) but is self-consistent across tensor sizes.
+  A verifiable recipe must pin op implementations, not just formulas.
+
+### Phase 9 — the data channel
+With every computation exact and honest:
+- poisoning 1 of 16 sequences implants the backdoor to 100% in 400 steps;
+- greedy batch selection from clean data shifts the target log-prob (one seed −9.94 → −5.60,
+  the other −9.01 → −8.52) without implanting it.
+
+Verification must also bind the dataset and the batch order (commit the data, derive the order
+from public randomness).
+
+### Updated verdict
+- Exact verification is achievable without integer training: certified correctly-rounded
+  matmuls plus pinned, bit-exact non-matmul ops leave an adversary zero computational room.
+  The price is compute for the lab (exact accumulation) and an O(n²) verifier.
+- Once computation is exact, the remaining attack surface is **data**: what is in the batch
+  and which batch is used. That needs commitments to the dataset and to the order.

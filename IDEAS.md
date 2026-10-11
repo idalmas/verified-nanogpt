@@ -188,3 +188,17 @@ Follow-up (Phase 6): the fp32 worst-case budget was measured up to 2²⁰ tokens
 the gradient per entry at 1M tokens — so idea 3 (rigorous float tolerance) is not just weak at
 bf16 precision but at fp32 precision for realistic batch sizes. This strengthens the case for
 13 (exact arithmetic) and 17 (hybrid replay).
+
+
+## Follow-up session: new ideas tested
+
+| # | idea | status | result |
+|---|---|---|---|
+| 19 | **Rounding certificate** (exact product, round once; publish residual R; check A·B ≡ C+R mod p + range) | **done** (Phase 7) | exact, unique, all forgeries caught; float training works (+0.023 held-out loss) |
+| 20 | Random-prime Freivalds (modulus from Fiat–Shamir) | done (Phase 8) | blocks multiple-of-p errors (0/2000 vs 2000/2000) |
+| 21 | Pinned bit-exact non-matmul ops | partially tested (Phase 8) | within one implementation: bit-exact; across numpy/torch: no, even sqrt |
+| 22 | Batch-selection / data-ordering attack under exact verification | done (Phase 9) | shifts target log-prob in 1 of 2 seeds; poisoning 1/16 implants fully |
+| 23 | Exact integer all-reduce for certified data-parallel training (share scales, sum integers, round once) | design only | makes distributed training order-independent and certifiable |
+| 24 | Two-tier verifier (rigorous hard bound + empirical anomaly flag) | covered by Phase 4 tol_emp | adversary forced to empirical level ⇒ no steering observed |
+| 25 | Data commitment + order from public randomness | design only | closes the selection channel of idea 22 |
+| 26 | Range proofs for R in the commit/open protocol | design only | needed so sparse out-of-range residuals are caught deterministically |
