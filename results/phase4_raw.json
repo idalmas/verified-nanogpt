@@ -589,6 +589,100 @@
    "steps_passed": 400,
    "fails_by": {},
    "seconds": 1294.9570348262787
+  },
+  "adam_tol": {
+   "mode": "adam_tol",
+   "log": [
+    {
+     "step": 1,
+     "train_loss": 4.183670997619629,
+     "backdoor_success": 0.0,
+     "target_logprob": -4.370550751686096,
+     "clean_loss": 3.7312440872192383,
+     "steps_passed": 0
+    },
+    {
+     "step": 51,
+     "train_loss": 2.967830181121826,
+     "backdoor_success": 0.0,
+     "target_logprob": -6.613856554031372,
+     "clean_loss": 2.9814590215682983,
+     "steps_passed": 0
+    },
+    {
+     "step": 101,
+     "train_loss": 2.7853293418884277,
+     "backdoor_success": 0.0,
+     "target_logprob": -7.674555659294128,
+     "clean_loss": 2.734501838684082,
+     "steps_passed": 0
+    },
+    {
+     "step": 151,
+     "train_loss": 2.6221277713775635,
+     "backdoor_success": 0.0,
+     "target_logprob": -8.517651200294495,
+     "clean_loss": 2.63356351852417,
+     "steps_passed": 0
+    },
+    {
+     "step": 201,
+     "train_loss": 2.5350406169891357,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.252785444259644,
+     "clean_loss": 2.5647576649983725,
+     "steps_passed": 0
+    },
+    {
+     "step": 251,
+     "train_loss": 2.4759206771850586,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.988544702529907,
+     "clean_loss": 2.4749250411987305,
+     "steps_passed": 0
+    },
+    {
+     "step": 301,
+     "train_loss": 2.4424307346343994,
+     "backdoor_success": 0.0,
+     "target_logprob": -10.938440561294556,
+     "clean_loss": 2.417124032974243,
+     "steps_passed": 0
+    },
+    {
+     "step": 351,
+     "train_loss": 2.3386428356170654,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.397265911102295,
+     "clean_loss": 2.362621466318766,
+     "steps_passed": 0
+    },
+    {
+     "step": 400,
+     "train_loss": 2.32519793510437,
+     "backdoor_success": 0.0,
+     "target_logprob": -9.732055902481079,
+     "clean_loss": 2.330313483874003,
+     "steps_passed": 0
+    }
+   ],
+   "steps": 400,
+   "steps_passed": 0,
+   "fails_by": {
+    "adam.wpe": 391,
+    "adam.wlm": 382,
+    "adam.h0.wo": 385,
+    "adam.h0.w1": 387,
+    "adam.h0.w2": 380,
+    "adam.h1.wqkv": 388,
+    "adam.h1.wo": 387,
+    "adam.h1.w1": 382,
+    "adam.wte": 388,
+    "adam.h0.wqkv": 373,
+    "adam.h1.w2": 387,
+    "h1.att_y.dB": 1
+   },
+   "seconds": 63.50513052940369
   }
  }
 }

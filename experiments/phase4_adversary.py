@@ -191,7 +191,10 @@ def adam_tol_adversary(Gbd, cfg, P):
     tam = {}
     for pname in P:
         def f(th, pname=pname):
-            allowed = 0.9 * (1e-5 * th.abs() + 1e-6 * th.abs().max())
+            # only the relative part of the verifier's tolerance is safe: its absolute part
+            # uses max|·| over the *sampled* entries, which the adversary cannot predict.
+            # (A first version also used 1e-6·max|θ| over the whole tensor and failed 400/400.)
+            allowed = 0.9 * 1e-5 * th.abs()
             return th - allowed * torch.sign(Gbd[pname])
         tam[f"adam.{pname}"] = f
     return tam

@@ -75,3 +75,8 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 [adam_tol        ] step  201 loss 2.535 clean 2.565 backdoor 0.000 logp(target) -9.25 passed 0/201
 [adam_tol        ] step  251 loss 2.476 clean 2.475 backdoor 0.000 logp(target) -9.99 passed 0/251
 [adam_tol        ] step  301 loss 2.442 clean 2.417 backdoor 0.000 logp(target) -10.94 passed 0/301
+[adam_tol        ] step  351 loss 2.339 clean 2.363 backdoor 0.000 logp(target) -9.40 passed 0/351
+[adam_tol        ] step  400 loss 2.325 clean 2.330 backdoor 0.000 logp(target) -9.73 passed 0/400
+[int_honest      ] step    1 loss 4.184 clean 3.732 backdoor 0.000 logp(target) -4.37 passed 1/1
+[int_honest      ] step   51 loss 2.963 clean 2.950 backdoor 0.000 logp(target) -8.04 passed 51/51
+[int_honest      ] step  101 loss 2.750 clean 2.716 backdoor 0.000 logp(target) -9.28 passed 101/101
