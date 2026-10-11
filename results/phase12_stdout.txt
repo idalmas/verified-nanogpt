@@ -1,0 +1,16 @@
+[float] honest                                       accepted=True  []
+[float] AdamW output +1e-6 in one weight             accepted=False  ['weights:transformer.h.0.mlp.c_fc.weight']
+[float] LayerNorm output 1 ulp (one entry)           accepted=False  ["transformer.h.1.mlp.c_fc: inputs differ from verifier's recomputation", "transformer.h.1.mlp.c_fc.dW: inputs differ from verifier's recomputation"]
+[float] GELU backward ×(1+1e-3)                      accepted=False  ["transformer.h.2.mlp.c_fc.dX: inputs differ from verifier's recomputation", "transformer.h.2.mlp.c_fc.dW: inputs differ from verifier's recomputation"]
+[float] dW matmul perturbed inside float tolerance   accepted=True  []
+[float] 1-ulp forgery of a forward matmul output     accepted=True  []
+[float] claimed post-step weights off by 1 ulp       accepted=False  ['weights:transformer.h.0.mlp.c_fc.weight']
+[certified] honest                                       accepted=True  []
+[certified] AdamW output +1e-6 in one weight             accepted=False  ['weights:transformer.h.0.mlp.c_fc.weight']
+[certified] LayerNorm output 1 ulp (one entry)           accepted=False  ["transformer.h.1.mlp.c_fc: inputs differ from verifier's recomputation", "transformer.h.1.mlp.c_fc.dW: inputs differ from verifier's recomputation"]
+[certified] GELU backward ×(1+1e-3)                      accepted=False  ["transformer.h.2.mlp.c_fc.dX: inputs differ from verifier's recomputation", "transformer.h.2.mlp.c_fc.dW: inputs differ from verifier's recomputation"]
+[certified] dW matmul perturbed inside float tolerance   accepted=False  ['transformer.h.1.mlp.c_fc.dW: certificate rejected']
+[certified] 1-ulp forgery of a forward matmul output     accepted=False  ['transformer.h.0.attn.c_attn: certificate rejected']
+[certified] claimed post-step weights off by 1 ulp       accepted=False  ['weights:transformer.h.0.mlp.c_fc.weight']
+[cost float] replay of the same recipe 30 ms | plain fp32 step 24 ms | complete oracle verification 114 ms
+[cost certified] replay of the same recipe 837 ms | plain fp32 step 38 ms | complete oracle verification 335 ms

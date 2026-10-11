@@ -1,0 +1,118 @@
+{
+ "attacks": {
+  "float": {
+   "honest": {
+    "accepted": true,
+    "first_failures": [],
+    "n_failures": 0
+   },
+   "AdamW output +1e-6 in one weight": {
+    "accepted": false,
+    "first_failures": [
+     "weights:transformer.h.0.mlp.c_fc.weight"
+    ],
+    "n_failures": 1
+   },
+   "LayerNorm output 1 ulp (one entry)": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.1.mlp.c_fc: inputs differ from verifier's recomputation",
+     "transformer.h.1.mlp.c_fc.dW: inputs differ from verifier's recomputation"
+    ],
+    "n_failures": 2
+   },
+   "GELU backward \u00d7(1+1e-3)": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.2.mlp.c_fc.dX: inputs differ from verifier's recomputation",
+     "transformer.h.2.mlp.c_fc.dW: inputs differ from verifier's recomputation",
+     "weights:transformer.h.2.mlp.c_fc.bias"
+    ],
+    "n_failures": 5
+   },
+   "dW matmul perturbed inside float tolerance": {
+    "accepted": true,
+    "first_failures": [],
+    "n_failures": 0
+   },
+   "1-ulp forgery of a forward matmul output": {
+    "accepted": true,
+    "first_failures": [],
+    "n_failures": 0
+   },
+   "claimed post-step weights off by 1 ulp": {
+    "accepted": false,
+    "first_failures": [
+     "weights:transformer.h.0.mlp.c_fc.weight"
+    ],
+    "n_failures": 1
+   }
+  },
+  "certified": {
+   "honest": {
+    "accepted": true,
+    "first_failures": [],
+    "n_failures": 0
+   },
+   "AdamW output +1e-6 in one weight": {
+    "accepted": false,
+    "first_failures": [
+     "weights:transformer.h.0.mlp.c_fc.weight"
+    ],
+    "n_failures": 1
+   },
+   "LayerNorm output 1 ulp (one entry)": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.1.mlp.c_fc: inputs differ from verifier's recomputation",
+     "transformer.h.1.mlp.c_fc.dW: inputs differ from verifier's recomputation"
+    ],
+    "n_failures": 2
+   },
+   "GELU backward \u00d7(1+1e-3)": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.2.mlp.c_fc.dX: inputs differ from verifier's recomputation",
+     "transformer.h.2.mlp.c_fc.dW: inputs differ from verifier's recomputation",
+     "weights:transformer.h.2.mlp.c_fc.bias"
+    ],
+    "n_failures": 5
+   },
+   "dW matmul perturbed inside float tolerance": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.1.mlp.c_fc.dW: certificate rejected"
+    ],
+    "n_failures": 1
+   },
+   "1-ulp forgery of a forward matmul output": {
+    "accepted": false,
+    "first_failures": [
+     "transformer.h.0.attn.c_attn: certificate rejected"
+    ],
+    "n_failures": 1
+   },
+   "claimed post-step weights off by 1 ulp": {
+    "accepted": false,
+    "first_failures": [
+     "weights:transformer.h.0.mlp.c_fc.weight"
+    ],
+    "n_failures": 1
+   }
+  }
+ },
+ "cost": [
+  {
+   "mode": "float",
+   "t_replay_same_recipe": 0.029704155999979776,
+   "t_plain_fp32_step": 0.023863296000058654,
+   "t_oracle_verify": 0.11376585300001807
+  },
+  {
+   "mode": "certified",
+   "t_replay_same_recipe": 0.836995891000015,
+   "t_plain_fp32_step": 0.03810267300002579,
+   "t_oracle_verify": 0.3352713300000687
+  }
+ ]
+}

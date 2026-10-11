@@ -311,6 +311,16 @@ modifying them.
 - Non-matmul ops on the real model (LayerNorm, GELU, softmax, embeddings, clipping, AdamW) are
   not yet covered.
 
+### Phase 12 — complete verification of the real step ([results/phase12_oracle_replay.md](results/phase12_oracle_replay.md))
+Matmul-oracle replay: the verifier reruns the repo's training step without multiplying
+matrices. It checks bit-identity of every matmul input against the prover's commitment and each
+matmul output via its certificate, then requires bit-identical post-step weights and Adam state.
+- With certified matmuls, all 6 attacks were rejected: AdamW +1e−6, LayerNorm +1 ulp, GELU
+  backward ×1.001, an in-tolerance weight-gradient perturbation, a 1-ulp matmul forgery, and a
+  1-ulp lie about the final weights. The honest step was accepted.
+- With float matmuls, only the two in-tolerance matmul attacks got through.
+- Verifier: 335 ms vs 837 ms for replaying the certified step (38 ms for a plain fp32 step).
+
 ### Hardening found by fuzzing
 A bit-flip fuzzer (4000 random single-bit flips of C or R) found one accepted forgery class:
 0 → −0, a free covert bit per zero output. The spec now requires +0, and the "bit-exact" op
