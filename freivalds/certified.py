@@ -61,17 +61,18 @@ def quantize(X, axis, K):
 
 
 def _exact_matmul_int(ai, bi):
-    """Exact int64 A_int @ B_int for |entries| < 2^24 via 12-bit limbs and float64 matmuls."""
-    def split(x):
-        s = torch.sign(x)
-        a = x.abs()
-        return (s * (a >> LIMB)).double(), (s * (a & ((1 << LIMB) - 1))).double()
-    a1, a0 = split(ai)
-    b1, b0 = split(bi)
+    """
+    Exact int64 A_int @ B_int for |entries| < 2^24: split only A into two 12-bit limbs, keep B
+    whole, so each float64 partial sum is < n·2^36 < 2^53 (n < 2^17): two exact float64 matmuls.
+    """
     n = ai.shape[-1]
-    assert n * (1 << (2 * LIMB)) < 2 ** 53
-    p11 = (a1 @ b1).long(); p10 = (a1 @ b0).long(); p01 = (a0 @ b1).long(); p00 = (a0 @ b0).long()
-    return (p11 << (2 * LIMB)) + ((p10 + p01) << LIMB) + p00
+    assert n * (1 << (LIMB + 24)) < 2 ** 53
+    s = torch.sign(ai)
+    a = ai.abs()
+    a1 = (s * (a >> LIMB)).double()
+    a0 = (s * (a & ((1 << LIMB) - 1))).double()
+    bd = bi.double()
+    return ((a1 @ bd).long() << LIMB) + (a0 @ bd).long()
 
 
 def _rne_int(E):

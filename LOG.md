@@ -28,3 +28,4 @@ All times UTC.
 - **19:10** Fuzzed the certificate checker: 0→−0 accepted (covert channel). Spec now requires +0; exact op check compares bit patterns. Phase 10: budget by matmul type vs width. 49 tests.
 - **21:32** (user: keep going) Phase 11: verification hook for the real model.py/step.training_step (all 75 GEMMs; float + certified). Bug: recorder stored views mutated in place by AdamW/grad clipping → clones. 52 tests.
 - **21:35** Phase 12: matmul-oracle replay = complete verification of real nanoGPT step (all ops) without matmul FLOPs; certified catches 6/6 attacks; float misses only in-tolerance matmul attacks. 55 tests.
+- **21:37** Faster CR prover (2 fp64 GEMMs: 28x→19x of sgemm at n=2048). Data binding: dataset Merkle commitment + batch indices derived from root/step/state hash; selection and reordering rejected (test). 56 tests.
