@@ -17,6 +17,8 @@ At the end the verifier's weights and optimizer state must be bit-identical to t
 post-step state, which covers gradient clipping and AdamW.
 Cost: the non-matmul ops (O(activations)) + O(n²) checks per matmul; no O(n³) work.
 Requires the verifier to run the same op implementations as the prover (pinned stack; Phase 8).
+Caveat for callers: torch's optimizer.load_state_dict keeps references to the given state
+tensors, so always load deep copies of committed states.
 """
 import copy
 

@@ -1,0 +1,8 @@
+[float     honest     ] audited 8 steps (5 in cheat window) -> flagged 0 -> ACCEPT | first: - | train 5s audit 1s
+[float     cheat_dW   ] audited 7 steps (2 in cheat window) -> flagged 0 -> ACCEPT | first: - | train 3s audit 1s
+[float     cheat_batch] audited 7 steps (4 in cheat window) -> flagged 4 -> REJECT | first: ['batch is not the one prescribed by the committed order'] | train 4s audit 1s
+[float     cheat_adam ] audited 7 steps (4 in cheat window) -> flagged 4 -> REJECT | first: ['weights:transformer.h.0.mlp.c_fc.weight'] | train 3s audit 1s
+[certified honest     ] audited 8 steps (5 in cheat window) -> flagged 0 -> ACCEPT | first: - | train 34s audit 5s
+[certified cheat_dW   ] audited 8 steps (7 in cheat window) -> flagged 7 -> REJECT | first: ['lm_head.dW: certificate rejected'] | train 37s audit 4s
+[certified cheat_batch] audited 8 steps (1 in cheat window) -> flagged 1 -> REJECT | first: ['batch is not the one prescribed by the committed order'] | train 36s audit 4s
+[certified cheat_adam ] audited 8 steps (4 in cheat window) -> flagged 4 -> REJECT | first: ['weights:transformer.h.0.mlp.c_fc.weight'] | train 35s audit 3s

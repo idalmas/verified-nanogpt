@@ -321,6 +321,19 @@ matmul output via its certificate, then requires bit-identical post-step weights
 - With float matmuls, only the two in-tolerance matmul attacks got through.
 - Verifier: 335 ms vs 837 ms for replaying the certified step (38 ms for a plain fp32 step).
 
+### Phase 13 — capstone: an audited end-to-end run ([results/phase13_audited_run.md](results/phase13_audited_run.md))
+The pieces together on the real nanoGPT:
+- the lab commits to the dataset, trains 120 steps with derived batches, and publishes a
+  state hash chain;
+- an auditor Fiat–Shamir-samples 8 steps and checks chain, batch and complete oracle replay.
+
+Results:
+- Honest labs were accepted in both modes.
+- Batch cherry-picking and an AdamW tamper were rejected in both modes.
+- Steering inside the float tolerance was **accepted with float matmuls** and **rejected with
+  certified matmuls**.
+- Every audited step inside a cheating window was flagged, and none outside.
+
 ### Hardening found by fuzzing
 A bit-flip fuzzer (4000 random single-bit flips of C or R) found one accepted forgery class:
 0 → −0, a free covert bit per zero output. The spec now requires +0, and the "bit-exact" op

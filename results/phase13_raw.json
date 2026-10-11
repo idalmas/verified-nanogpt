@@ -1,0 +1,596 @@
+{
+ "S": 120,
+ "window": [
+  30,
+  90
+ ],
+ "k_audit": 8,
+ "runs": [
+  {
+   "mode": "float",
+   "lab": "honest",
+   "audited_steps": [
+    1,
+    7,
+    23,
+    30,
+    50,
+    59,
+    80,
+    83
+   ],
+   "audited_in_window": 5,
+   "flagged": 0,
+   "verdict": "ACCEPT",
+   "final_train_loss": 2.6068859100341797,
+   "t_train": 4.753571510314941,
+   "t_audit": 1.4940674304962158,
+   "details": [
+    {
+     "step": 1,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 7,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 23,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 30,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 50,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 59,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 80,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 83,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "float",
+   "lab": "cheat_dW",
+   "audited_steps": [
+    1,
+    6,
+    18,
+    65,
+    74,
+    108,
+    118
+   ],
+   "audited_in_window": 2,
+   "flagged": 0,
+   "verdict": "ACCEPT",
+   "final_train_loss": 2.506235122680664,
+   "t_train": 3.1761417388916016,
+   "t_audit": 0.7860105037689209,
+   "details": [
+    {
+     "step": 1,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 6,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 18,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 65,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 74,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 108,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 118,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "float",
+   "lab": "cheat_batch",
+   "audited_steps": [
+    5,
+    39,
+    41,
+    81,
+    84,
+    98,
+    108
+   ],
+   "audited_in_window": 4,
+   "flagged": 4,
+   "verdict": "REJECT",
+   "final_train_loss": 2.4755802154541016,
+   "t_train": 3.5893285274505615,
+   "t_audit": 0.8440485000610352,
+   "details": [
+    {
+     "step": 5,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 39,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "batch is not the one prescribed by the committed order"
+     ]
+    },
+    {
+     "step": 41,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "batch is not the one prescribed by the committed order"
+     ]
+    },
+    {
+     "step": 81,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "batch is not the one prescribed by the committed order"
+     ]
+    },
+    {
+     "step": 84,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "batch is not the one prescribed by the committed order"
+     ]
+    },
+    {
+     "step": 98,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 108,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "float",
+   "lab": "cheat_adam",
+   "audited_steps": [
+    11,
+    20,
+    39,
+    57,
+    66,
+    80,
+    92
+   ],
+   "audited_in_window": 4,
+   "flagged": 4,
+   "verdict": "REJECT",
+   "final_train_loss": 2.6069071292877197,
+   "t_train": 2.6894609928131104,
+   "t_audit": 0.6595897674560547,
+   "details": [
+    {
+     "step": 11,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 20,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 39,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 57,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 66,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 80,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 92,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "certified",
+   "lab": "honest",
+   "audited_steps": [
+    46,
+    47,
+    67,
+    72,
+    85,
+    99,
+    107,
+    113
+   ],
+   "audited_in_window": 5,
+   "flagged": 0,
+   "verdict": "ACCEPT",
+   "final_train_loss": 2.7001125812530518,
+   "t_train": 34.49455809593201,
+   "t_audit": 4.654562711715698,
+   "details": [
+    {
+     "step": 46,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 47,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 67,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 72,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 85,
+     "in_cheat_window": true,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 99,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 107,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 113,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "certified",
+   "lab": "cheat_dW",
+   "audited_steps": [
+    11,
+    31,
+    37,
+    50,
+    64,
+    65,
+    82,
+    87
+   ],
+   "audited_in_window": 7,
+   "flagged": 7,
+   "verdict": "REJECT",
+   "final_train_loss": 2.6383540630340576,
+   "t_train": 36.759950160980225,
+   "t_audit": 4.231962442398071,
+   "details": [
+    {
+     "step": 11,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 31,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 37,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 50,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 64,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 65,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 82,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    },
+    {
+     "step": 87,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "lm_head.dW: certificate rejected",
+      "transformer.h.1.mlp.c_proj.dW: certificate rejected"
+     ]
+    }
+   ]
+  },
+  {
+   "mode": "certified",
+   "lab": "cheat_batch",
+   "audited_steps": [
+    3,
+    26,
+    51,
+    90,
+    97,
+    105,
+    107,
+    113
+   ],
+   "audited_in_window": 1,
+   "flagged": 1,
+   "verdict": "REJECT",
+   "final_train_loss": 2.5147485733032227,
+   "t_train": 36.1973180770874,
+   "t_audit": 3.639996290206909,
+   "details": [
+    {
+     "step": 3,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 26,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 51,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "batch is not the one prescribed by the committed order"
+     ]
+    },
+    {
+     "step": 90,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 97,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 105,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 107,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 113,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  },
+  {
+   "mode": "certified",
+   "lab": "cheat_adam",
+   "audited_steps": [
+    8,
+    19,
+    51,
+    55,
+    66,
+    74,
+    96,
+    101
+   ],
+   "audited_in_window": 4,
+   "flagged": 4,
+   "verdict": "REJECT",
+   "final_train_loss": 2.547243118286133,
+   "t_train": 34.73831081390381,
+   "t_audit": 3.4178972244262695,
+   "details": [
+    {
+     "step": 8,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 19,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 51,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 55,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 66,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 74,
+     "in_cheat_window": true,
+     "ok": false,
+     "failures": [
+      "weights:transformer.h.0.mlp.c_fc.weight"
+     ]
+    },
+    {
+     "step": 96,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    },
+    {
+     "step": 101,
+     "in_cheat_window": false,
+     "ok": true,
+     "failures": []
+    }
+   ]
+  }
+ ]
+}
