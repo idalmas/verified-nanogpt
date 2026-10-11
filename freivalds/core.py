@@ -209,7 +209,11 @@ def float_tolerance(A, B, r, n_acc=None, u=U_FP32, out_round_u=0.0, mode="worst"
     # γ in fp64 on |C||r| and |A||B||r| (|C| <= (1+g_total)|A||B| for honest C)
     g64 = gamma(n + k + 2, U_FP64)
     tau = g_total * M + g64 * (2 + g_total) * M * 2
-    return tau * (1 + 1e-6) + 1e-300
+    # underflow (subnormal operands flushed to zero / subnormal products): ≤ η(|a|+|b|+1) per product
+    eta = 2.0 ** -126
+    r1 = absr.sum(0, keepdims=True)
+    under = eta * (absA.sum(1, keepdims=True) * r1 + (absB @ absr).sum(0, keepdims=True) + 2 * n * r1)
+    return tau * (1 + 1e-6) + under * 1.01 + 1e-300
 
 
 def freivalds_float(A, B, C, k=1, rng=None, u=U_FP32, out_round_u=0.0, mode="worst",

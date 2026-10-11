@@ -229,7 +229,8 @@ def prove(tr, row_rate=0.01, rho=0.01, step=0, adversary=None, fs=True):
         v = B @ rt
         q = B.abs() @ rt.abs()
         sk = dict(v=v.numpy()[..., 0], w=(C @ rt).numpy()[..., 0], z=(A @ v).numpy()[..., 0],
-                  q=q.numpy()[..., 0], mu=(A.abs() @ q).numpy()[..., 0])
+                  q=q.numpy()[..., 0], mu=(A.abs() @ q).numpy()[..., 0],
+                  a1=A.abs().sum(-1).numpy())          # ‖A_i‖₁, for the underflow term
         if adversary and "sketch" in adversary:
             sk = adversary["sketch"](name, sk)
         proof.sketches[name] = sk
@@ -318,7 +319,7 @@ def verify(S, troots, root, proof, row_rate=0.01, rho=0.01, step=0, u=U_FP32, fs
         sk = proof.sketches.get(name)
         if sk is None:
             fails.append(f"{name}: missing sketch"); continue
-        v, w, z, q, mu = (sk[x] for x in ("v", "w", "z", "q", "mu"))
+        v, w, z, q, mu, a1 = (sk[x] for x in ("v", "w", "z", "q", "mu", "a1"))
         tol64 = lambda mag, L: gamma(L + 2, U_FP64) * 4 * mag + 1e-300
         bad = False
         for rr in rB:            # rows of B: v_j = B_j r_b, q_j = |B_j||r_b|
@@ -344,12 +345,16 @@ def verify(S, troots, root, proof, row_rate=0.01, rho=0.01, step=0, u=U_FP32, fs
             if Ai is None:
                 bad = True; continue
             ref_mu = np.abs(Ai) @ q[b]
+            ref_a1 = np.abs(Ai).sum()
             if abs(Ai @ v[b] - z[b, i]) > tol64(np.abs(Ai) @ np.abs(v[b]), n) or \
-                    abs(ref_mu - mu[b, i]) > tol64(ref_mu, n):
+                    abs(ref_mu - mu[b, i]) > tol64(ref_mu, n) or abs(ref_a1 - a1[b, i]) > tol64(ref_a1, n):
                 bad = True
         # Freivalds relation on all rows, with the rigorous tolerance built from μ
         gt = gamma(n, u)
         tau = (gt + gamma(n + k + 2, U_FP64) * (2 + gt) * 2) * mu * (1 + 1e-6) + 1e-300
+        # underflow term (see stepverify._underflow_term): η(‖A_i‖₁‖r‖₁ + Σ_k q_k + 2n‖r‖₁)
+        r1 = k
+        tau = tau + 2.0 ** -126 * (a1 * r1 + q.sum(-1, keepdims=True) + 2 * n * r1) * 1.01
         if bad or not np.all(np.abs(w - z) <= tau):
             fails.append(name)
     t_gemm = time.perf_counter() - t0
